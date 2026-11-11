@@ -29,6 +29,14 @@ commercial fixtures belong in the source repository.
   clipping. This is not a live monitor-switching test.
 - The original upstream checkout remains unmodified; the working game backup is
   kept outside the publication repository.
+- Publication security: Gitleaks 8.30.1 passed the allowlisted source, staged
+  content, complete reachable Git history and extracted release archive. The
+  independent gate passed source, staged blobs, all reachable commit trees,
+  archive membership and helper binary strings. No game material or private
+  information was found in the audited publication set. The six public LLVM
+  CI-path exceptions are documented in SECURITY.md; no secret rules were suppressed.
+- License notices cover the helper libraries and compiler runtime. No game
+  redistribution rights are asserted. No LFS objects or submodules are used.
 - Original user playtest beyond round 10 remains evidence for the preserved
   engine/game pipeline, not a complete qualification of every packaging path.
 
