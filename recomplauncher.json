@@ -1,0 +1,129 @@
+{
+  "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
+  "format": 1,
+  "game": {
+    "kind": "iso",
+    "label": "Your MOJO! USA PlayStation 2 disc image (SLUS_207.41, SYSTEM.CNF VER 1.02). Exact supported hashes: docs/COMPATIBILITY.md. ISO or lossless single-track CD CHD; standalone also accepts BIN/CUE. First setup downloads about 300 MB of open-source build tools and needs several GB free.",
+    "check": {
+      "iso9660": "SLUS_207.41",
+      "ids": [
+        "SLUS-20741"
+      ]
+    }
+  },
+  "prepare": {
+    "program": [
+      "MOJO.exe"
+    ],
+    "args": [
+      "--prepare",
+      "--game",
+      "{game}"
+    ],
+    "label": "Validating your MOJO! USA disc and building locally",
+    "timeout": 7200
+  },
+  "start": {
+    "program": [
+      "MOJO.exe"
+    ],
+    "args": [
+      "--game",
+      "{game}"
+    ]
+  },
+  "config": [
+    {
+      "id": "main",
+      "format": "json",
+      "file": [
+        {
+          "path": "{install}/userdata/settings.json"
+        }
+      ],
+      "new": {
+        "fullscreen": "false",
+        "render_scale": "1"
+      }
+    }
+  ],
+  "settings": [
+    {
+      "id": "display",
+      "label": "Display",
+      "help": "Native uses the current monitor's desktop resolution. The original aspect ratio is retained.",
+      "choices": [
+        {
+          "label": "Window",
+          "set": {
+            "fullscreen": "false"
+          }
+        },
+        {
+          "label": "Native (current monitor resolution)",
+          "set": {
+            "fullscreen": "true"
+          }
+        }
+      ]
+    },
+    {
+      "id": "detail",
+      "label": "Rendering resolution",
+      "help": "Gameplay uses 640 × 448 at Original. Other scenes may use a different base resolution. Higher settings need more GPU resources; restart the game after changing.",
+      "choices": [
+        {
+          "label": "Original (640 × 448)",
+          "set": {
+            "render_scale": "1"
+          }
+        },
+        {
+          "label": "Enhanced (1280 × 896)",
+          "set": {
+            "render_scale": "2"
+          }
+        },
+        {
+          "label": "High (1920 × 1344)",
+          "set": {
+            "render_scale": "3"
+          }
+        },
+        {
+          "label": "Ultra (2560 × 1792)",
+          "set": {
+            "render_scale": "4"
+          }
+        }
+      ]
+    }
+  ],
+  "folders": {
+    "saves": [
+      {
+        "path": "{install}/userdata/saves"
+      }
+    ]
+  },
+  "saves": [
+    "{install}/userdata/saves/*.ps2",
+    "{install}/userdata/saves/keys.ini",
+    "{install}/userdata/settings.json"
+  ],
+  "actions": [
+    {
+      "id": "saves",
+      "label": "Open saves",
+      "help": "Memory card and controls; never replaced by updates.",
+      "open": "saves"
+    }
+  ],
+  "exit_codes": {
+    "20": "Unsupported, damaged, or missing disc. Supply your MOJO! USA PS2 SLUS_207.41 disc matching docs/COMPATIBILITY.md.",
+    "21": "Setup dependency or filesystem error. Check internet access, free space and write permission.",
+    "22": "Native compilation failed. Retry setup; do not share raw private build logs.",
+    "23": "Setup exceeded its time limit. Retry when the computer is less busy.",
+    "24": "This installation is already building or running. Close its other session first."
+  }
+}
