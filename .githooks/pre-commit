@@ -1,0 +1,4 @@
+#!/bin/sh
+set -eu
+python scripts/verify_publication.py --git
+gitleaks git . --pre-commit --staged --redact=100
