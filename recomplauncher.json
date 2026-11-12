@@ -113,7 +113,7 @@
     {
       "id": "upscale_hud",
       "label": "Upscale HUD",
-      "help": "Sharpens HUD text and icons at Enhanced resolution or higher. Restart the game to apply.",
+      "help": "Reconstructs sharper HUD textures from your disc at Enhanced resolution or higher. HUD size stays the same. Restart the game to apply.",
       "in": "controls",
       "defaults": {
         "upscale_hud": "off"

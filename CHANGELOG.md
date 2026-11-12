@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-rc.6
+
+- Reconstruct higher-resolution HUD texels from the player's local disc at
+  runtime, keeping the original text and icon dimensions.
+- Use the existing **Upscale HUD** setting in F1 and RecompLauncher. The
+  portable release contains shader code and uses the same local setup on both paths.
+
 ## 1.0.0-rc.5
 
 - Add **Upscale HUD** to F1 and RecompLauncher Game Settings. It refines edges

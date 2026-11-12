@@ -8,6 +8,7 @@
 | SDL2 | https://github.com/libsdl-org/SDL/releases/tag/release-2.32.10 | Input, window, audio; zlib |
 | wgpu-native | https://github.com/gfx-rs/wgpu-native/releases/tag/v29.0.1.1 | Graphics; MIT/Apache-2.0 |
 | DirectXShaderCompiler | https://github.com/microsoft/DirectXShaderCompiler/releases/tag/v1.9.2609 | D3D12 shaders; upstream LLVM/MIT notices |
+| AMD FidelityFX FSR 1 | https://github.com/GPUOpen-Effects/FidelityFX-FSR/blob/a21ffb8f6c13233ba336352bdff293894c706575/ffx-fsr/ffx_fsr1.h | EASU kernel adapted to WGSL for transparent HUD textures; MIT |
 | RecompLauncher SDK | https://recomplauncher.com/sdk-files/recomplauncher-agent.md | Manifest/protocol reference, retrieved 2026-11-11 |
 | Gitleaks | https://github.com/gitleaks/gitleaks/releases/tag/v8.30.1 | Development/release secret scanning; MIT, not bundled |
 

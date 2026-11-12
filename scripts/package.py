@@ -10,7 +10,7 @@ subprocess.run([sys.executable,str(root/'scripts/verify_publication.py')],check=
 files=json.loads((root/'publication-files.json').read_text())
 dest=root/'dist'
 dest.mkdir(exist_ok=True)
-archive=dest/'MOJO-Recomp-v1.0.0-rc.5-Windows-x64.zip'
+archive=dest/'MOJO-Recomp-v1.0.0-rc.6-Windows-x64.zip'
 with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for name in sorted(files): z.write(root/name,name)
     for name in ('MOJO.exe','chd_to_iso.exe'): z.write(root/'build/helpers'/name,name)

@@ -9,8 +9,8 @@ import subprocess
 import sys
 import uuid
 
-VERSION = '1.0.0-rc.5'
-PIPELINE = '57ef1197-hud-upscale-1'
+VERSION = '1.0.0-rc.6'
+PIPELINE = '57ef1197-hud-upscale-2'
 ISO_SHA256 = 'bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5'
 ELF_SHA256 = 'b749b3765aa3c74d594ec502686246965b69e8492c49ac08f5283a245adc8a60'
 SERIAL = 'SLUS_207.41'

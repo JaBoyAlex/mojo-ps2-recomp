@@ -1,9 +1,10 @@
-# MOJO! Recomp 1.0.0-rc.5 — Windows x64 portable builder
+# MOJO! Recomp 1.0.0-rc.6 — Windows x64 portable builder
 
-**Upscale HUD** is available in F1 and RecompLauncher's Game Settings. Choose
-Enhanced gameplay resolution or higher, enable Upscale HUD, and restart the
-game. It refines HUD text and icon edges at their existing size. The original
-HUD is the default.
+**Upscale HUD** now reconstructs higher-resolution texels from your disc's HUD
+textures as the game draws them. The timer, labels, and icons keep their original
+dimensions. Choose Enhanced gameplay resolution or higher, enable Upscale HUD
+in F1 or RecompLauncher's Game Settings, and restart. The option defaults to Off.
+Both the original and reconstructed artwork stay on your computer.
 
 This archive contains a builder and open-source helper tools, not the game.
 Supply your own **MOJO! USA PlayStation 2 disc, SLUS_207.41, SYSTEM.CNF VER 1.02**.

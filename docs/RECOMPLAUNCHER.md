@@ -20,8 +20,9 @@ not registered as diagnostic attachments; use the sanitized diagnostics command.
 
 **Upscale HUD** uses the same `upscale_hud` key in `userdata/saves/keys.ini` as F1.
 It is off by default and applies on the next launch at Enhanced rendering
-resolution or higher. The control works alongside the existing display and
-camera settings.
+resolution or higher. The GPU reconstructs HUD texels in memory from the
+player's own disc during play. RecompLauncher downloads the same code-only
+builder archive used for standalone setup. Neither path needs a texture pack.
 
 Big Picture starts fullscreen. Console-specific key inputs, mods, multi-game
 selection and achievements are inapplicable or unimplemented. Controller glyph

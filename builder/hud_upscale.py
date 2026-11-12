@@ -1,4 +1,4 @@
-"""Opt-in subpixel sampling for native-size HUD overlays in the pinned runtime."""
+"""Opt-in texture reconstruction for native-size HUD overlays in the pinned runtime."""
 import importlib.util
 from pathlib import Path
 
@@ -77,9 +77,10 @@ std::string with_sharp_2d(''')
     replace(shader, 'override SHARP: u32 = 0u;', '''override SHARP: u32 = 0u;
 override HUD_UPSCALE: bool = false;
 var<private> hud_sprite: bool = false;''')
-    replace(shader, '    return clamp((f - 0.5) * f32(SCALE) * 0.5 * f32(SHARP) + 0.5, 0.0, 1.0);',
-            '    let strength = select(f32(SHARP), 1.0, hud_sprite);\n    return clamp((f - 0.5) * f32(SCALE) * 0.5 * strength + 0.5, 0.0, 1.0);')
-    replace(shader, '    if (sharp_sprite) {', '    if (sharp_sprite || hud_sprite) {')
+    # Restore the general sprite filter when updating an engine cache from rc.5.
+    replace(shader, '    let strength = select(f32(SHARP), 1.0, hud_sprite);\n    return clamp((f - 0.5) * f32(SCALE) * 0.5 * strength + 0.5, 0.0, 1.0);',
+            '    return clamp((f - 0.5) * f32(SCALE) * 0.5 * f32(SHARP) + 0.5, 0.0, 1.0);')
+    replace(shader, '    if (sharp_sprite || hud_sprite) {', '    if (sharp_sprite) {')
     replace(shader, '    sharp_sprite = false;', '    sharp_sprite = false;\n    hud_sprite = false;')
     replace(shader, '            sharp_sprite = SHARP != 0u && SCALE > 1u && abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;',
             '''            let native_size = abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;
@@ -91,3 +92,20 @@ var<private> hud_sprite: bool = false;''')
                 has(s, F_BILINEAR) && mode(s, 8u, 2u) == 1u && !mip_levels(s);''')
     replace(shader, '            let point = has(s, F_TME) && (!has(s, F_BILINEAR) || (direct && !upscaled_source)) && !mip_levels(s);',
             '            let point = !hud_sprite && has(s, F_TME) && (!has(s, F_BILINEAR) || (direct && !upscaled_source)) && !mip_levels(s);')
+    replace(shader, '                let ay = ceil(min(y0, y0 + dy));', '''                let ay = ceil(min(y0, y0 + dy));
+                if (hud_sprite && !rt_copy) {
+                    let first = vec2<f32>(ax, ay);
+                    let last = max(first, ceil(max(vec2<f32>(x0, y0), vec2<f32>(x0 + dx, y0 + dy))) - 1.0);
+                    let start = vec2<f32>(x0, y0);
+                    let delta = vec2<f32>(dx, dy);
+                    let uv0 = mix(a.xy, b.xy, (first - start) / delta) / 16.0;
+                    let uv1 = mix(a.xy, b.xy, (last - start) / delta) / 16.0;
+                    hud_min = vec2<i32>(floor(min(uv0, uv1)));
+                    hud_max = vec2<i32>(floor(max(uv0, uv1)));
+                }''')
+    signature = 'fn sample(s: Setup, uin: f32, vin: f32, k: u32) -> u32 {'
+    reconstruction = Path(__file__).with_name('hud_reconstruct.wgsl').read_text(encoding='utf-8')
+    replace(shader, signature, reconstruction + '\n' + signature + '''
+    if (hud_sprite && !rt_copy) {
+        return sample_hud(s, uin, vin, k);
+    }''')

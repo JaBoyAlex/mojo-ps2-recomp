@@ -28,7 +28,7 @@ before translating anything. No download source for commercial game data is prov
 
 ## Standalone installation
 
-1. Extract `MOJO-Recomp-v1.0.0-rc.5-Windows-x64.zip` into a writable folder.
+1. Extract `MOJO-Recomp-v1.0.0-rc.6-Windows-x64.zip` into a writable folder.
 2. Run `MOJO.exe` and choose your disc image. For BIN/CUE, keep the two files together.
 3. Let setup download checksum-pinned open-source build tools (about 300 MB,
    plus runtime dependencies). Allow at least 5 GB free and several minutes.
@@ -73,6 +73,9 @@ For clearer HUD text and icons at the same size, choose **Enhanced** gameplay
 resolution or higher and turn on **Upscale HUD** in F1 or in RecompLauncher's
 Game Settings. Restart the game to apply. The option is off by default and both
 menus use the same setting in `userdata/saves/keys.ini`.
+The GPU reconstructs higher-resolution texels from your disc's HUD textures
+as it draws them. The portable release includes the shader source. Original
+and reconstructed artwork stay on your computer.
 
 In F1, set **Invert right stick X** to **On** to reverse horizontal camera
 movement. It takes effect immediately and is saved in `userdata/saves/keys.ini`.

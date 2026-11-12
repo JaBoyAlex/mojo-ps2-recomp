@@ -1,5 +1,25 @@
 # Validation record
 
+HUD texture reconstruction (1.0.0-rc.6):
+
+- Built over an isolated rc.5 installation using the manifest's headless
+  prepare command and a verified CHD. SHA-256 checks matched the original
+  local disc, memory card, controls and display settings after the upgrade.
+- The packaged launcher accepted the verified CUE/BIN through the same
+  prepare command and reused the local build. The standalone launcher then
+  reached 3100 frames and exited successfully without a disc argument.
+- Captured four matched Stage 1 gameplay frames at each of the four rendering
+  resolutions on Windows 11 and Direct3D 12. Off matched rc.5 Off exactly.
+  At Enhanced, High and Ultra the changes were confined to the HUD regions.
+  At Original resolution the On and Off frames were identical.
+- Compared the same Ultra frame with Upscale HUD On in both releases. The
+  reconstructed timer and stage label had smoother curved and diagonal
+  outlines at the same size. This is a visual check of the sampled HUD, not
+  a full-game review of every texture.
+- A virtual controller toggled Upscale HUD in F1 and the setting took effect
+  after restart. All 206 checkpoints matched across a 3100-frame replay.
+- The updated RecompLauncher manifest passed JSON schema validation.
+
 HUD upscaling (1.0.0-rc.5):
 
 - Compared four matched Stage 1 gameplay frames on Windows 11 with Direct3D 12
@@ -54,7 +74,7 @@ remained 192 and left X/Y remained 160/96. Both runs exited zero after 150 frame
 Compiled host tests passed neutral/endpoints, disabled behavior, settings
 round-trip, preservation of unrelated settings, and the F1 menu toggle command.
 
-This file records executed checks only, on 2026-11-11. No raw logs, screenshots or
+This file records executed checks only. No raw logs, screenshots or
 commercial fixtures belong in the source repository.
 
 - Standalone fresh toolchain download, verified BIN/CUE import, native compilation:
