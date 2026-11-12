@@ -18,6 +18,11 @@ defaults only are supplied, so updates preserve player choices. Save declaration
 include memory cards and settings only. Private build/runtime logs are deliberately
 not registered as diagnostic attachments; use the sanitized diagnostics command.
 
+**Upscale HUD** uses the same `upscale_hud` key in `userdata/saves/keys.ini` as F1.
+It is off by default and applies on the next launch at Enhanced rendering
+resolution or higher. The control works alongside the existing display and
+camera settings.
+
 Big Picture starts fullscreen. Console-specific key inputs, mods, multi-game
 selection and achievements are inapplicable or unimplemented. Controller glyph
 replacement is not attempted inside the original game. RecompAchievements could

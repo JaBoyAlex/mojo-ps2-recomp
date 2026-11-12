@@ -9,8 +9,8 @@ import subprocess
 import sys
 import uuid
 
-VERSION = '1.0.0-rc.4'
-PIPELINE = '57ef1197-camera-xy-1'
+VERSION = '1.0.0-rc.5'
+PIPELINE = '57ef1197-hud-upscale-1'
 ISO_SHA256 = 'bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5'
 ELF_SHA256 = 'b749b3765aa3c74d594ec502686246965b69e8492c49ac08f5283a245adc8a60'
 SERIAL = 'SLUS_207.41'
@@ -82,14 +82,11 @@ def prepare(args, state):
         raise Failure(20, 'Unsupported image container. Use ISO, BIN/CUE, or single-track CD CHD.')
     validate(iso, engine, cache)
     import importlib.util
-    spec = importlib.util.spec_from_file_location('display_labels', Path(__file__).with_name('display_labels.py'))
-    labels = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(labels)
-    labels.apply(engine)
-    spec = importlib.util.spec_from_file_location('camera_controls', Path(__file__).with_name('camera_controls.py'))
-    camera = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(camera)
-    camera.apply(engine)
+    for name in ('display_labels', 'camera_controls', 'hud_upscale'):
+        spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
+        patch = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(patch)
+        patch.apply(engine)
     disc = state/'disc.iso'
     if iso.resolve() != disc.resolve():
         shutil.copyfile(iso, disc.with_suffix('.new'))

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.5
+
+- Add **Upscale HUD** to F1 and RecompLauncher Game Settings. It refines edges
+  on HUD text and icons at higher gameplay resolutions without changing their size.
+- Keep existing HUD rendering as the default. Settings changes apply on restart.
+
 ## 1.0.0-rc.4
 
 - Send CUE/BIN and CHD through the same exact disc validation as ISO in the

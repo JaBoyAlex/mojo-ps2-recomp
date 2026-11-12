@@ -29,7 +29,18 @@ int main() {
         assert(restored.mouse_invert==2 && restored.scale==3);
     }
     quickmenu::Menu menu; menu.open();
-    for(int n=0;n<7;++n) menu.move(1);
+    for (int n=0; n<6; ++n) menu.move(1);
+    assert(menu.side()==quickmenu::Command::upscale_hud);
+    assert(menu.choose()==quickmenu::Command::upscale_hud);
+    assert(!keymap::defaults().upscale_hud);
+    const auto hud_text = keymap::with_upscale_hud(enabled, true);
+    auto hud_config = keymap::defaults();
+    keymap::parse(hud_text, hud_config, problems);
+    assert(problems.empty() && hud_config.upscale_hud && hud_config.right_stick_invert_x);
+    assert(hud_config.scale==3 && hud_config.mouse_invert==2);
+    keymap::parse(keymap::with_upscale_hud(hud_text, false), hud_config, problems);
+    assert(problems.empty() && !hud_config.upscale_hud);
+    menu.move(2);
     assert(menu.side()==quickmenu::Command::invert_camera_x);
     assert(menu.choose()==quickmenu::Command::invert_camera_x);
     menu.move(1);

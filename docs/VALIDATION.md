@@ -1,5 +1,23 @@
 # Validation record
 
+HUD upscaling (1.0.0-rc.5):
+
+- Compared four matched Stage 1 gameplay frames on Windows 11 with Direct3D 12
+  at each rendering resolution. At Enhanced, High and Ultra, enabling the
+  filter changed the sampled HUD pixels while the pixels outside the HUD areas
+  stayed identical. Output dimensions matched at each setting. Original
+  resolution was pixel-identical with the option on and off.
+- At High resolution, the default output for the sampled gameplay frame matched
+  rc.4 exactly. All 206 replay checkpoints matched across 3100 frames.
+- A scripted virtual controller selected **Upscale HUD** in the F1 menu. It
+  preserved the camera and resolution settings and applied the filter after
+  restarting the native runtime.
+- RecompLauncher beta 37 displayed the candidate manifest's setting as Off by
+  default. Choosing On wrote the same INI key that F1 uses and preserved the
+  other settings. This check used the existing desktop test install.
+- The portable rc.5 package prepared a new build over an isolated rc.4 install.
+  The original disc, memory card, controls and settings file hashes matched.
+
 Desktop RecompLauncher beta 37 on Windows 11:
 
 - Added the public GitHub project through **Add From GitHub or GitLab**. The

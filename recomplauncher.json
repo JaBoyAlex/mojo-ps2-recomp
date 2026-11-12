@@ -111,6 +111,25 @@
       ]
     },
     {
+      "id": "upscale_hud",
+      "label": "Upscale HUD",
+      "help": "Sharpens HUD text and icons at Enhanced resolution or higher. Restart the game to apply.",
+      "in": "controls",
+      "defaults": {
+        "upscale_hud": "off"
+      },
+      "choices": [
+        {
+          "label": "Off",
+          "set": { "upscale_hud": "off" }
+        },
+        {
+          "label": "On",
+          "set": { "upscale_hud": "on" }
+        }
+      ]
+    },
+    {
       "label": "Invert right stick X",
       "id": "invert_camera_x",
       "help": "Reverses horizontal camera input only. Y and ball movement are unchanged. Applies on launch; the F1 menu can also toggle it immediately.",

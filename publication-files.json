@@ -9,6 +9,7 @@
   "builder/build.py",
   "builder/camera_controls.py",
   "builder/display_labels.py",
+  "builder/hud_upscale.py",
   "CHANGELOG.md",
   "CMakeLists.txt",
   "CONTRIBUTING.md",

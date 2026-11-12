@@ -11,7 +11,7 @@ def main():
     args=p.parse_args()
     engine=args.engine.resolve()
     root=Path(__file__).resolve().parents[1]
-    for name in ('display_labels','camera_controls'):
+    for name in ('display_labels','camera_controls','hud_upscale'):
         spec=importlib.util.spec_from_file_location(name,root/'builder'/(name+'.py'))
         module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         module.apply(engine)
@@ -27,6 +27,6 @@ def main():
                     '-I'+str(sdl/'include/SDL2'),str(sdl/'lib/libSDL2.dll.a'),'-o',str(exe)],check=True)
     shutil.copy2(sdl/'bin/SDL2.dll',build/'SDL2.dll')
     subprocess.run([str(exe)],check=True)
-    print('PASS: camera X endpoints, neutral, disabled behavior, persistence, unrelated settings and F1 menu selection')
+    print('PASS: independent camera controls, HUD setting persistence and F1 menu selection')
 
 if __name__=='__main__': main()

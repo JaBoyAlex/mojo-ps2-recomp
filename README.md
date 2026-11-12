@@ -28,7 +28,7 @@ before translating anything. No download source for commercial game data is prov
 
 ## Standalone installation
 
-1. Extract `MOJO-Recomp-v1.0.0-rc.4-Windows-x64.zip` into a writable folder.
+1. Extract `MOJO-Recomp-v1.0.0-rc.5-Windows-x64.zip` into a writable folder.
 2. Run `MOJO.exe` and choose your disc image. For BIN/CUE, keep the two files together.
 3. Let setup download checksum-pinned open-source build tools (about 300 MB,
    plus runtime dependencies). Allow at least 5 GB free and several minutes.
@@ -68,6 +68,11 @@ starts fullscreen. [Integration details](docs/RECOMPLAUNCHER.md).
 SDL2 controllers and keyboard are supported. The tested controller was an
 8BitDo Ultimate 2C. F1 opens the runtime menu; F11 toggles fullscreen;
 F5/F8 quick-save/quick-load. The menu shows control bindings.
+
+For clearer HUD text and icons at the same size, choose **Enhanced** gameplay
+resolution or higher and turn on **Upscale HUD** in F1 or in RecompLauncher's
+Game Settings. Restart the game to apply. The option is off by default and both
+menus use the same setting in `userdata/saves/keys.ini`.
 
 In F1, set **Invert right stick X** to **On** to reverse horizontal camera
 movement. It takes effect immediately and is saved in `userdata/saves/keys.ini`.
