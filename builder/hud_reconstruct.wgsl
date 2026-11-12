@@ -11,9 +11,10 @@ fn hud_tap(s: Setup, uv: vec2<i32>, k: u32) -> u32 {
     return fetch(s, p.x, p.y, k);
 }
 
-fn hud_color(raw: u32) -> vec4<f32> {
+fn hud_color(raw: u32, uses_alpha: bool) -> vec4<f32> {
     let c = unpack4(raw);
-    return vec4<f32>(c.rgb * (c.a / 128.0), c.a);
+    let alpha = select(128.0, c.a, uses_alpha);
+    return vec4<f32>(c.rgb * (alpha / 128.0), alpha);
 }
 
 fn hud_edge(top: f32, left: f32, center: f32, right: f32, bottom: f32) -> vec3<f32> {
@@ -42,14 +43,34 @@ fn sample_hud(s: Setup, uin: f32, vin: f32, k: u32) -> u32 {
         return a;
     }
     var color: array<vec4<f32>, 12>;
-    var guide: array<f32, 12>;
-    color[0] = hud_color(a);
-    color[1] = hud_color(b);
-    color[2] = hud_color(c);
-    color[3] = hud_color(d);
+    let uses_alpha = has(s, F_TCC);
+    color[0] = hud_color(a, uses_alpha);
+    color[1] = hud_color(b, uses_alpha);
+    color[2] = hud_color(c, uses_alpha);
+    color[3] = hud_color(d, uses_alpha);
     for (var i = 4u; i < 12u; i = i + 1u) {
-        color[i] = hud_color(hud_tap(s, ij + HUD_OFFSETS[i], k));
+        color[i] = hud_color(hud_tap(s, ij + HUD_OFFSETS[i], k), uses_alpha);
     }
+    return reconstruct_2d(color, f);
+}
+
+fn sample_uploaded_picture(gid: vec2<u32>) -> u32 {
+    let uv = (vec2<f32>(gid) + 0.5) / f32(SCALE) - 0.5;
+    let ij = vec2<i32>(floor(uv));
+    let upper = vec2<i32>(i32(prm(5u)) - 1, i32(prm(6u)) - 1);
+    let origin = vec2<u32>(prm(3u), prm(4u));
+    let bp = prm(0u);
+    let bw = prm(1u);
+    var color: array<vec4<f32>, 12>;
+    for (var i = 0u; i < 12u; i = i + 1u) {
+        let p = origin + vec2<u32>(clamp(ij + HUD_OFFSETS[i], vec2<i32>(0), upper));
+        color[i] = hud_color(read_pixel(PSMCT32, bp, bw, p.x, p.y), false);
+    }
+    return reconstruct_2d(color, fract(uv));
+}
+
+fn reconstruct_2d(color: array<vec4<f32>, 12>, f: vec2<f32>) -> u32 {
+    var guide: array<f32, 12>;
     for (var i = 0u; i < 12u; i = i + 1u) {
         guide[i] = dot(color[i], vec4<f32>(0.25, 0.5, 0.25, 1.0));
     }

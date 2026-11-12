@@ -1,5 +1,21 @@
 # Validation record
 
+2D artwork upscaling (1.0.0-rc.7):
+
+- Compared matched Ultra frames from both studio intros and the MOJO! title
+  splash. Each used higher-resolution texture samples with Upscale 2D enabled.
+- Compared three main-menu frames from the same saved state. The corner logo,
+  mode label and arrows changed with the expanded filter. Pixels outside those
+  UI regions matched. With the option Off, the full frames matched rc.6.
+- Compared four Stage 1 motion frames at each rendering resolution. Original
+  resolution was identical with the option On and Off. At Enhanced, High and
+  Ultra, the changed pixels stayed within the HUD regions.
+- Replayed 3100 frames with Upscale 2D enabled. All 206 checkpoints matched.
+  A scripted controller toggled the option in F1 and verified it after restart.
+- Prepared rc.7 over an isolated rc.6 installation. Disc, settings and memory
+  card hashes matched after the upgrade. The updated manifest passed SDK schema
+  validation, and the standalone launcher opened rc.7 with the option enabled.
+
 HUD texture reconstruction (1.0.0-rc.6):
 
 - Built over an isolated rc.5 installation using the manifest's headless

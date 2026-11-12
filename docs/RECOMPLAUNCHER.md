@@ -18,11 +18,11 @@ defaults only are supplied, so updates preserve player choices. Save declaration
 include memory cards and settings only. Private build/runtime logs are deliberately
 not registered as diagnostic attachments; use the sanitized diagnostics command.
 
-**Upscale HUD** uses the same `upscale_hud` key in `userdata/saves/keys.ini` as F1.
-It is off by default and applies on the next launch at Enhanced rendering
-resolution or higher. The GPU reconstructs HUD texels in memory from the
-player's own disc during play. RecompLauncher downloads the same code-only
-builder archive used for standalone setup. Neither path needs a texture pack.
+**Upscale 2D artwork** uses the same `upscale_hud` key in `userdata/saves/keys.ini`
+as **Upscale 2D** in F1. It defaults to Off and takes effect on the next launch
+at Enhanced rendering resolution or higher. The GPU reconstructs HUD, menu,
+and startup artwork from the player's disc. RecompLauncher downloads the same
+builder archive used for standalone setup.
 
 Big Picture starts fullscreen. Console-specific key inputs, mods, multi-game
 selection and achievements are inapplicable or unimplemented. Controller glyph

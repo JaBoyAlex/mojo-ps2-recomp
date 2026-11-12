@@ -112,8 +112,8 @@
     },
     {
       "id": "upscale_hud",
-      "label": "Upscale HUD",
-      "help": "Reconstructs sharper HUD textures from your disc at Enhanced resolution or higher. HUD size stays the same. Restart the game to apply.",
+      "label": "Upscale 2D artwork",
+      "help": "Reconstructs sharper HUD, menu art, startup images and intro video from your disc at Enhanced resolution or higher. Restart the game to apply.",
       "in": "controls",
       "defaults": {
         "upscale_hud": "off"

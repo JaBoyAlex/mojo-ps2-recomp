@@ -1,4 +1,4 @@
-"""Opt-in texture reconstruction for native-size HUD overlays in the pinned runtime."""
+"""Opt-in reconstruction of 2D artwork in the pinned runtime."""
 import importlib.util
 from pathlib import Path
 
@@ -42,10 +42,12 @@ std::string with_sharp_2d(''')
     replace(menu, 'Command::sharp_2d, Command::fullscreen,', 'Command::sharp_2d, Command::upscale_hud, Command::fullscreen,')
     replace(menu, '{"F1", "F5", "F8", "F2", "", "", "F11", "", "", "", "", ""};',
             '{"F1", "F5", "F8", "F2", "", "", "", "F11", "", "", "", "", ""};')
+    if '"Upscale HUD: < "' in menu.read_text(encoding='utf-8'):
+        replace(menu, '"Upscale HUD: < "', '"Upscale 2D: < "')
     replace(menu, '    case Command::fullscreen: {', '''    case Command::upscale_hud: {
         const char *hint = v.upscale_hud_next && v.scale_next <= 1 ? "  Enhanced+"
             : v.upscale_hud_next != v.upscale_hud_now ? "  restart" : "";
-        return std::string("Upscale HUD: < ") + (v.upscale_hud_next ? "On" : "Off") + " >" + hint;
+        return std::string("Upscale 2D: < ") + (v.upscale_hud_next ? "On" : "Off") + " >" + hint;
     }
     case Command::fullscreen: {''')
     replace(menu, 'c == Command::sharp_2d || c == Command::fullscreen',
@@ -74,6 +76,18 @@ std::string with_sharp_2d(''')
     replace(gpu, '        WGPUConstantEntry constants[5];', '        WGPUConstantEntry constants[6];')
     replace(gpu, '        set(has_sharp, "SHARP", static_cast<double>(sharp));',
             '        set(has_sharp, "SHARP", static_cast<double>(sharp));\n        set(has_hud_upscale, "HUD_UPSCALE", hud_upscale ? 1.0 : 0.0);')
+    replace(gpu, '''    return push_params({src.fbp, src.fbw, src.psm, src.dbx, src.dby, src.width, src.height, src.halved ? 1u : 0u, scratch_at,
+                        o.active ? 1u : 0u, o.fbp, o.fbw, o.psm, o.dbx, o.dby, static_cast<std::uint32_t>(o.x), static_cast<std::uint32_t>(o.y), o.width, o.height});''',
+            '''    // MOJO uploads the title splash straight into the displayed framebuffer.
+    // Uploaded pages have identical sub-samples. Drawn scenes keep their own
+    // high-resolution samples, including any effects composited into them.
+    static const bool upscale_2d = os::env("PS2_HUD_UPSCALE") == "1";
+    const bool uploaded_picture = upscale_2d && g_scale > 1 && !g_live && !src.halved && !o.active &&
+        src.psm == PSMCT32 && src.width >= 320 && src.height >= 200 &&
+        !rendered(pages(src.fbp, src.fbw, src.psm, src.dbx, src.dby, src.dbx + src.width - 1, src.dby + src.height - 1));
+    return push_params({src.fbp, src.fbw, src.psm, src.dbx, src.dby, src.width, src.height, src.halved ? 1u : 0u, scratch_at,
+                        o.active ? 1u : 0u, o.fbp, o.fbw, o.psm, o.dbx, o.dby, static_cast<std::uint32_t>(o.x), static_cast<std::uint32_t>(o.y), o.width, o.height,
+                        uploaded_picture ? 1u : 0u});''')
     replace(shader, 'override SHARP: u32 = 0u;', '''override SHARP: u32 = 0u;
 override HUD_UPSCALE: bool = false;
 var<private> hud_sprite: bool = false;''')
@@ -82,14 +96,37 @@ var<private> hud_sprite: bool = false;''')
             '    return clamp((f - 0.5) * f32(SCALE) * 0.5 * f32(SHARP) + 0.5, 0.0, 1.0);')
     replace(shader, '    if (sharp_sprite || hud_sprite) {', '    if (sharp_sprite) {')
     replace(shader, '    sharp_sprite = false;', '    sharp_sprite = false;\n    hud_sprite = false;')
-    replace(shader, '            sharp_sprite = SHARP != 0u && SCALE > 1u && abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;',
-            '''            let native_size = abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;
+    old_classification = '''            let native_size = abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;
             sharp_sprite = SHARP != 0u && SCALE > 1u && native_size;
             // MOJO's HUD uses blended, depth-independent RGBA sprites at native size.
             // Keep their original coverage, but let the upscaled samples see texel edges.
             hud_sprite = HUD_UPSCALE && SCALE > 1u && native_size && s.tpsm == PSMCT32 && !upscaled_source &&
                 has(s, F_TME) && has(s, F_FST) && has(s, F_ABE) && has(s, F_TCC) &&
-                has(s, F_BILINEAR) && mode(s, 8u, 2u) == 1u && !mip_levels(s);''')
+                has(s, F_BILINEAR) && mode(s, 8u, 2u) == 1u && !mip_levels(s);'''
+    original_classification = '            sharp_sprite = SHARP != 0u && SCALE > 1u && abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;'
+    current_classification = '''            let native_size = abs(abs(du) - abs(dx)) <= abs(dx) * 0.02 && abs(abs(dv) - abs(dy)) <= abs(dy) * 0.02;
+            sharp_sprite = SHARP != 0u && SCALE > 1u && native_size;
+            // The HUD and menu also use palette textures. The opening movies
+            // are opaque, depth-independent RGB sprites stretched vertically.
+            let palette = s.tpsm == PSMT8 || s.tpsm == PSMT4;
+            let overlay = has(s, F_ABE) && has(s, F_TCC) && (s.tpsm == PSMCT32 || palette);
+            let movie = !has(s, F_ABE) && !has(s, F_TCC) && mode(s, 20u, 2u) == 1u &&
+                s.tpsm == PSMCT32 && s.tbp != s.fbp && s.tbw == 12u && s.tw == 10u && s.th == 10u &&
+                has(s, F_FST) && has(s, F_ZMSK) && abs(dx) == 640.0 && abs(dy) == 480.0 &&
+                abs(du) == 640.0 && abs(dv) == 448.0;
+            // The movie is uploaded into a padded texture. Its bounding page
+            // range can include rendered pages in the unused stride padding.
+            if (HUD_UPSCALE && movie) {
+                upscaled_source = false;
+            }
+            let magnified = abs(du) > 0.0 && abs(dv) > 0.0 &&
+                abs(du) <= f32(SCALE) * abs(dx) && abs(dv) <= f32(SCALE) * abs(dy);
+            hud_sprite = HUD_UPSCALE && SCALE > 1u && magnified && (overlay || movie) && !upscaled_source &&
+                has(s, F_TME) && has(s, F_FST) && has(s, F_BILINEAR) &&
+                mode(s, 8u, 2u) == 1u && !mip_levels(s);'''
+    source = shader.read_text(encoding='utf-8')
+    replace(shader, old_classification if old_classification in source else original_classification,
+            current_classification)
     replace(shader, '            let point = has(s, F_TME) && (!has(s, F_BILINEAR) || (direct && !upscaled_source)) && !mip_levels(s);',
             '            let point = !hud_sprite && has(s, F_TME) && (!has(s, F_BILINEAR) || (direct && !upscaled_source)) && !mip_levels(s);')
     replace(shader, '                let ay = ceil(min(y0, y0 + dy));', '''                let ay = ceil(min(y0, y0 + dy));
@@ -105,7 +142,20 @@ var<private> hud_sprite: bool = false;''')
                 }''')
     signature = 'fn sample(s: Setup, uin: f32, vin: f32, k: u32) -> u32 {'
     reconstruction = Path(__file__).with_name('hud_reconstruct.wgsl').read_text(encoding='utf-8')
-    replace(shader, signature, reconstruction + '\n' + signature + '''
+    source = shader.read_text(encoding='utf-8')
+    kernel_start = '// Edge-adaptive kernel based on FidelityFX FSR 1 EASU,'
+    if kernel_start in source:
+        start = source.index(kernel_start)
+        end = source.index(signature, start)
+        replace(shader, source[start:end], reconstruction + '\n')
+    else:
+        replace(shader, signature, reconstruction + '\n' + signature + '''
     if (hud_sprite && !rt_copy) {
         return sample_hud(s, uin, vin, k);
     }''')
+    replace(shader, '    let psm = prm(2u);\n    var sy = gid.y;', '''    if (HUD_UPSCALE && SCALE > 1u && prm(19u) != 0u) {
+        scratch[prm(8u) + gid.y * w + gid.x] = sample_uploaded_picture(gid.xy) | 0xFF000000u;
+        return;
+    }
+    let psm = prm(2u);
+    var sy = gid.y;''')

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.0-rc.7
+
+- Extend the 2D upscaler to paletted menu and HUD graphics, including the
+  MOJO! corner logo, as well as the title splash and intro video.
+- Rename the F1 option to **Upscale 2D** and the RecompLauncher option to
+  **Upscale 2D artwork**. Existing preferences carry forward.
+
 ## 1.0.0-rc.6
 
 - Reconstruct higher-resolution HUD texels from the player's local disc at
