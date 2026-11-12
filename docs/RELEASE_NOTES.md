@@ -1,4 +1,8 @@
-# MOJO! Recomp 1.0.0-rc.1 — Windows x64 portable builder
+# MOJO! Recomp 1.0.0-rc.2 — Windows x64 portable builder
+
+Adds **F1 → Invert right stick X**. It changes horizontal camera input only,
+applies immediately, and persists across restarts. Right-stick Y and ball movement
+remain unchanged. Off preserves the game's original controls.
 
 This archive contains a builder and open-source helper tools, not the game.
 Supply your own **MOJO! USA PlayStation 2 disc, SLUS_207.41, SYSTEM.CNF VER 1.02**.

@@ -26,5 +26,7 @@ cmake -S $projectRoot -B "$buildRoot/helpers" -G Ninja -DCMAKE_C_COMPILER=clang 
 if ($LASTEXITCODE -ne 0) { throw 'Configure failed' }
 cmake --build "$buildRoot/helpers" -j 4
 if ($LASTEXITCODE -ne 0) { throw 'Helper build failed' }
+& "$ToolDir/python/python.exe" "$projectRoot/scripts/test_camera.py" --engine $engineSource
+if ($LASTEXITCODE -ne 0) { throw 'Camera controls tests failed' }
 & "$ToolDir/python/python.exe" "$projectRoot/scripts/package.py"
 if ($LASTEXITCODE -ne 0) { throw 'Release audit failed' }

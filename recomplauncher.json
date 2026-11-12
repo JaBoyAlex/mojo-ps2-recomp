@@ -45,6 +45,18 @@
         "fullscreen": "false",
         "render_scale": "1"
       }
+    },
+    {
+      "id": "controls",
+      "ensure": {
+        "right_stick_invert_x": "off"
+      },
+      "file": [
+        {
+          "path": "{install}/userdata/saves/keys.ini"
+        }
+      ],
+      "format": "ini"
     }
   ],
   "settings": [
@@ -94,6 +106,26 @@
           "label": "Ultra (2560 × 1792)",
           "set": {
             "render_scale": "4"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Invert right stick X",
+      "id": "invert_camera_x",
+      "help": "Reverses horizontal camera input only. Y and ball movement are unchanged. Applies on launch; the F1 menu can also toggle it immediately.",
+      "in": "controls",
+      "choices": [
+        {
+          "label": "Off (original game behavior)",
+          "set": {
+            "right_stick_invert_x": "off"
+          }
+        },
+        {
+          "label": "On (reverse horizontal camera)",
+          "set": {
+            "right_stick_invert_x": "on"
           }
         }
       ]

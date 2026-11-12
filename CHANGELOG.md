@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.2
+
+- Add a persistent F1 toggle for right-stick X inversion, applied immediately.
+- Preserve right-stick Y, ball movement inputs and the neutral position.
+- Exercise actual host controls, settings persistence and menu selection in CI.
+
 ## 1.0.0-rc.1
 
 - Shared standalone and RecompLauncher local builder around the tested recompiler.

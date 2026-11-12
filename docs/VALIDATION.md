@@ -1,5 +1,12 @@
 # Validation record
 
+Camera update (1.0.0-rc.2): the actual native SDL input path was exercised with a
+scripted virtual controller in two runs. With inversion off, left X/Y were 160/96
+and right X/Y were 64/192. With inversion on, only right X changed, to 191; right Y
+remained 192 and left X/Y remained 160/96. Both runs exited zero after 150 frames.
+Compiled host tests passed neutral/endpoints, disabled behavior, settings
+round-trip, preservation of unrelated settings, and the F1 menu toggle command.
+
 This file records executed checks only, on 2026-11-11. No raw logs, screenshots or
 commercial fixtures belong in the source repository.
 
