@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.4
+
+- Send CUE/BIN and CHD through the same exact disc validation as ISO in the
+  RecompLauncher builder. Keep the serial check when the launcher can read it.
+- Document the tested desktop installation from the public GitHub release.
+
 ## 1.0.0-rc.3
 
 - Add an independent persistent right-stick Y toggle directly below X in F1.

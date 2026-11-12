@@ -1,5 +1,18 @@
 # Validation record
 
+Desktop RecompLauncher beta 37 on Windows 11:
+
+- Added the public GitHub project through **Add From GitHub or GitLab**. The
+  launcher downloaded rc.3, opened its own setup screen from Play, accepted the
+  verified ISO, downloaded a fresh toolchain, and built the game with visible
+  progress. Ready to Play led to the native MOJO! main menu.
+- Game Settings showed Display, Rendering resolution, and the separate
+  right-stick X and Y controls.
+- The rc.3 manifest rejected CHD during launcher preflight. With the rc.4
+  manifest in the same isolated install, selecting the original CUE picked up
+  its BIN, validated the exact normalized ISO hash, and launched the native
+  runtime. This exercised the existing builder with the corrected manifest.
+
 Camera update (1.0.0-rc.3): all four independent toggle combinations passed in
 the native SDL virtual-controller test, each exiting zero after 150 frames:
 
@@ -63,12 +76,10 @@ commercial fixtures belong in the source repository.
 - Original user playtest beyond round 10 remains evidence for the preserved
   engine/game pipeline, not a complete qualification of every packaging path.
 
-RecompLauncher beta 37 was installed from its official signed download and opened.
-Its Developers tab was unavailable to the current account. Source inspection
-confirmed its verified-developer gate. Full desktop Check/Setup/Play testing is
-therefore incomplete; protocol success is not substituted for that UI test.
+The Developer tab's **Check** action was unavailable to the test account.
+The Setup and Play tests above used the normal desktop Library.
 
-Private GitHub publication is complete at https://github.com/JaBoyAlex/mojo-ps2-recomp.
+The public repository is https://github.com/JaBoyAlex/mojo-ps2-recomp.
 The first Windows GitHub Actions run passed unit tests, official SDK schema
 validation, a fresh helper build, source/history/archive security checks, and
 artifact upload: https://github.com/JaBoyAlex/mojo-ps2-recomp/actions/runs/43111409909.

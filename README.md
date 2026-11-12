@@ -28,7 +28,7 @@ before translating anything. No download source for commercial game data is prov
 
 ## Standalone installation
 
-1. Extract `MOJO-Recomp-v1.0.0-rc.3-Windows-x64.zip` into a writable folder.
+1. Extract `MOJO-Recomp-v1.0.0-rc.4-Windows-x64.zip` into a writable folder.
 2. Run `MOJO.exe` and choose your disc image. For BIN/CUE, keep the two files together.
 3. Let setup download checksum-pinned open-source build tools (about 300 MB,
    plus runtime dependencies). Allow at least 5 GB free and several minutes.
@@ -46,14 +46,17 @@ use exactly the same Python builder and upstream pipeline.
 
 ## RecompLauncher installation
 
-The release root includes `recomplauncher.json`. With a verified developer account,
-in RecompLauncher's developer settings, enable local builds, add the extracted release folder, run **Check**,
-then **Setup** and choose the supported disc. Setup invokes `MOJO.exe --prepare
---game <image>` with progress reporting and a two-hour limit. **Play** invokes
-the same executable and local build. Catalog listing requires separate submission;
-the badge alone does not mean this project is listed. The Level 3 protocol is
-tested; full desktop Setup/Play remains unverified because the test account does
-not expose Developer tools. Do not treat this as completed desktop certification.
+1. In RecompLauncher's **Library**, choose **Add From GitHub or GitLab**, paste
+   `https://github.com/JaBoyAlex/mojo-ps2-recomp`, and add the project.
+2. Choose **Install**, then **Play** to open the disc setup screen.
+3. Select the supported ISO, lossless single-track CHD, or the CUE file with
+   its matching BIN beside it. Let the automatic build finish, then choose
+   **Play** on the Ready to Play screen.
+
+The release root includes `recomplauncher.json`. Setup invokes
+`MOJO.exe --prepare --game <image>` with progress reporting and a two-hour limit.
+The GitHub import route works before the catalog listing is approved. See
+[validation](docs/VALIDATION.md) for the tested formats and steps.
 
 The settings screen offers Native monitor resolution and rendering options with
 pixel dimensions. Fullscreen uses the desktop display mode and preserves the

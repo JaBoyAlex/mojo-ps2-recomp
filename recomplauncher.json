@@ -3,9 +3,8 @@
   "format": 1,
   "game": {
     "kind": "iso",
-    "label": "Your MOJO! USA PlayStation 2 disc image (SLUS_207.41, SYSTEM.CNF VER 1.02). Exact supported hashes: docs/COMPATIBILITY.md. ISO or lossless single-track CD CHD; standalone also accepts BIN/CUE. First setup downloads about 300 MB of open-source build tools and needs several GB free.",
+    "label": "Your MOJO! USA PlayStation 2 disc image (SLUS_207.41, SYSTEM.CNF VER 1.02). Choose .iso, lossless single-track .chd, or .cue with its matching .bin beside it. Exact hashes: docs/COMPATIBILITY.md. First setup downloads about 300 MB of open-source build tools and needs several GB free.",
     "check": {
-      "iso9660": "SLUS_207.41",
       "ids": [
         "SLUS-20741"
       ]
