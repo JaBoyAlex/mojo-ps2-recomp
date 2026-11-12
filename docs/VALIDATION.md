@@ -45,7 +45,14 @@ Its Developers tab was unavailable to the current account. Source inspection
 confirmed its verified-developer gate. Full desktop Check/Setup/Play testing is
 therefore incomplete; protocol success is not substituted for that UI test.
 
-Remote CI and GitHub publication are blocked by missing GitHub CLI authentication.
-A pristine Windows VM, real game progression save/load, a full game playthrough,
+Private GitHub publication is complete at https://github.com/JaBoyAlex/mojo-ps2-recomp.
+The first Windows GitHub Actions run passed unit tests, official SDK schema
+validation, a fresh helper build, source/history/archive security checks, and
+artifact upload: https://github.com/JaBoyAlex/mojo-ps2-recomp/actions/runs/43111409909.
+No commercial game files were supplied to CI. GitHub's own secret-scanning API
+reported that the feature is unavailable for this private repository; local and
+CI Gitleaks plus the independent publication gate remain enforced.
+
+A pristine Windows VM game installation, real game progression save/load, a full game playthrough,
 and interactive resolution-menu qualification remain uncompleted. Dependency
 downloads and builds were fresh on the existing host, not a clean-machine claim.
