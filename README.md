@@ -28,7 +28,7 @@ before translating anything. No download source for commercial game data is prov
 
 ## Standalone installation
 
-1. Extract `MOJO-Recomp-v1.0.0-rc.2-Windows-x64.zip` into a writable folder.
+1. Extract `MOJO-Recomp-v1.0.0-rc.3-Windows-x64.zip` into a writable folder.
 2. Run `MOJO.exe` and choose your disc image. For BIN/CUE, keep the two files together.
 3. Let setup download checksum-pinned open-source build tools (about 300 MB,
    plus runtime dependencies). Allow at least 5 GB free and several minutes.
@@ -68,9 +68,10 @@ F5/F8 quick-save/quick-load. The menu shows control bindings.
 
 In F1, set **Invert right stick X** to **On** to reverse horizontal camera
 movement. It takes effect immediately and is saved in `userdata/saves/keys.ini`.
-Right-stick Y and both left-stick axes are unaffected. Off retains the original
-game's behavior. The toggle applies to the logical right stick, including keyboard
-or mouse input explicitly mapped to that stick.
+Directly below it, **Invert right stick Y** independently reverses vertical camera
+movement. Both left-stick axes are unaffected. Each toggle defaults to Off, retaining
+that axis's original game behavior. These apply to the logical right stick,
+including keyboard or mouse input explicitly mapped to that stick.
 
 All locally generated game files, the disc copy, settings and saves are under
 `userdata/`. The memory card is `userdata/saves/mojo.ps2`. Do not share this

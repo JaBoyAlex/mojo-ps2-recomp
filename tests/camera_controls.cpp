@@ -21,8 +21,18 @@ int main() {
     assert(problems.empty() && c.right_stick_invert_x && c.mouse_invert==2 && c.scale==3);
     keymap::parse(keymap::with_right_stick_invert_x(enabled,false),c,problems);
     assert(problems.empty() && !c.right_stick_invert_x);
+    for (bool x : {false,true}) for (bool y : {false,true}) {
+        const auto text=keymap::with_right_stick_invert_y(keymap::with_right_stick_invert_x(initial,x),y);
+        auto restored=keymap::defaults();
+        keymap::parse(text,restored,problems);
+        assert(problems.empty() && restored.right_stick_invert_x==x && restored.right_stick_invert_y==y);
+        assert(restored.mouse_invert==2 && restored.scale==3);
+    }
     quickmenu::Menu menu; menu.open();
     for(int n=0;n<7;++n) menu.move(1);
     assert(menu.side()==quickmenu::Command::invert_camera_x);
     assert(menu.choose()==quickmenu::Command::invert_camera_x);
+    menu.move(1);
+    assert(menu.side()==quickmenu::Command::invert_camera_y);
+    assert(menu.choose()==quickmenu::Command::invert_camera_y);
 }

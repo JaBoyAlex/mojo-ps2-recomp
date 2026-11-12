@@ -9,8 +9,8 @@ import subprocess
 import sys
 import uuid
 
-VERSION = '1.0.0-rc.2'
-PIPELINE = '57ef1197-camera-x-1'
+VERSION = '1.0.0-rc.3'
+PIPELINE = '57ef1197-camera-xy-1'
 ISO_SHA256 = 'bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5'
 ELF_SHA256 = 'b749b3765aa3c74d594ec502686246965b69e8492c49ac08f5283a245adc8a60'
 SERIAL = 'SLUS_207.41'
@@ -105,7 +105,7 @@ def prepare(args, state):
             progress(1, 'Verified local build is ready')
             return dest
     progress(.20, 'Compiling the open-source runtime and translating your local game (several minutes)')
-    run(['bash', 'scripts/port.sh', 'mojo', disc, '--native-only'], engine, cache/'build-private.log')
+    run([shutil.which('bash.exe'), 'scripts/port.sh', 'mojo', disc, '--native-only'], engine, cache/'build-private.log')
     progress(.90, 'Installing the local build without replacing saves')
     dest = state/'builds'/(VERSION+'-'+uuid.uuid4().hex[:8])
     dest.mkdir(parents=True)

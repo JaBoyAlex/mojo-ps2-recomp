@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.3
+
+- Add an independent persistent right-stick Y toggle directly below X in F1.
+- Preserve both left-stick axes; either camera axis can be reversed independently.
+- Fix Windows subprocess selection of bundled Bash instead of the WSL stub.
+
 ## 1.0.0-rc.2
 
 - Add a persistent F1 toggle for right-stick X inversion, applied immediately.

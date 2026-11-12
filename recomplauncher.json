@@ -49,7 +49,8 @@
     {
       "id": "controls",
       "ensure": {
-        "right_stick_invert_x": "off"
+        "right_stick_invert_x": "off",
+        "right_stick_invert_y": "off"
       },
       "file": [
         {
@@ -127,6 +128,26 @@
           "set": {
             "right_stick_invert_x": "on"
           }
+        }
+      ]
+    },
+    {
+      "help": "Reverses vertical camera input independently of X. Ball movement is unchanged. The F1 menu toggles this immediately.",
+      "in": "controls",
+      "label": "Invert right stick Y",
+      "id": "invert_camera_y",
+      "choices": [
+        {
+          "set": {
+            "right_stick_invert_y": "off"
+          },
+          "label": "Off (original game behavior)"
+        },
+        {
+          "set": {
+            "right_stick_invert_y": "on"
+          },
+          "label": "On (reverse vertical camera)"
         }
       ]
     }

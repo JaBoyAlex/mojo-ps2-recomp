@@ -18,7 +18,7 @@ def main():
         module.apply(engine)
     sdl=engine/'third_party/sdl2'
     if not (sdl/'lib/libSDL2.dll.a').exists():
-        subprocess.run(['bash','scripts/fetch_sdl2.sh'],cwd=engine,check=True)
+        subprocess.run([shutil.which('bash.exe'),'scripts/fetch_sdl2.sh'],cwd=engine,check=True)
     build=root/'build/camera-tests'; build.mkdir(parents=True,exist_ok=True)
     exe=build/'camera-controls-test.exe'
     subprocess.run(['clang++','-std=c++20','-O2','-static','-DSDL_MAIN_HANDLED',

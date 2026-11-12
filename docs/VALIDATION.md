@@ -1,5 +1,21 @@
 # Validation record
 
+Camera update (1.0.0-rc.3): all four independent toggle combinations passed in
+the native SDL virtual-controller test, each exiting zero after 150 frames:
+
+| X invert | Y invert | Left X/Y | Right X/Y |
+| --- | --- | --- | --- |
+| Off | Off | 160 / 96 | 64 / 192 |
+| On | Off | 160 / 96 | 191 / 192 |
+| Off | On | 160 / 96 | 64 / 63 |
+| On | On | 160 / 96 | 191 / 63 |
+
+Compiled host tests passed all four settings round-trips and verified that the Y
+menu item immediately follows X. The original game inverts both camera axes, as
+confirmed by the user's comparison with the first build. Neither toggle changes
+left-stick movement. The failed rc.2 CI run did not publish a release: it exposed
+Windows selecting the WSL Bash stub, corrected with explicit PATH resolution.
+
 Camera update (1.0.0-rc.2): the actual native SDL input path was exercised with a
 scripted virtual controller in two runs. With inversion off, left X/Y were 160/96
 and right X/Y were 64/192. With inversion on, only right X changed, to 191; right Y

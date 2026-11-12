@@ -15,9 +15,9 @@ D3D12; SDL2 provides windows, input and audio. No game-specific patches were
 needed for the known-good game. A small host-menu text patch adds explicit gameplay
 render dimensions and queries SDL's current desktop mode for the Native display
 label. It changes no renderer behavior, game logic or save format.
-An optional host-input patch reverses only the logical right-stick X value,
-preserving its neutral value. The F1 toggle writes `right_stick_invert_x` through
-the existing keymap settings writer; Y and both left-stick axes are untouched.
+Optional host-input toggles independently reverse the logical right-stick X and Y
+values, preserving neutral. F1 writes `right_stick_invert_x` and
+`right_stick_invert_y` through the existing keymap writer; left-stick axes are untouched.
 
 `MOJO.exe` is only an independently authored bootstrap. PowerShell downloads
 hash-pinned source/tools and invokes `builder/build.py`. That shared builder

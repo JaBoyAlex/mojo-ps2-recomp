@@ -1,4 +1,4 @@
-param([string]$Archive = 'dist/MOJO-Recomp-v1.0.0-rc.2-Windows-x64.zip')
+param([string]$Archive = 'dist/MOJO-Recomp-v1.0.0-rc.3-Windows-x64.zip')
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 Set-Location $projectRoot
@@ -18,4 +18,4 @@ git push -u origin main
 if ($LASTEXITCODE -ne 0) { throw 'Source push failed' }
 gh repo view --json url,isPrivate
 if ($LASTEXITCODE -ne 0) { throw 'Remote verification failed' }
-Write-Output 'Private source published. Let CI pass, then push the audited v1.0.0-rc.2 tag to publish its prerelease. Visibility remains private.'
+Write-Output 'Private source published. Let CI pass, then push the audited v1.0.0-rc.3 tag to publish its prerelease. Visibility remains private.'
