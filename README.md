@@ -5,9 +5,11 @@ A local Windows builder for the USA PlayStation 2 version of **MOJO!**. It uses
 your own verified disc into native PC code. No game files, translated game code,
 BIOS, or prebuilt game executable are distributed.
 
-**v1.1.0 performance candidate.** The original working build has been played beyond round
+**First stable release: v1.1.0.** The original working build has been played beyond round
 10 without reported bugs. This is not a claim of complete game compatibility.
 See [test status and limitations](docs/COMPATIBILITY.md).
+The update reduces framebuffer-clear and host-queue work; see the
+[measured performance results](docs/PERFORMANCE.md).
 
 Download the portable builder from this project's
 [GitHub Releases](https://github.com/JaBoyAlex/mojo-ps2-recomp/releases).

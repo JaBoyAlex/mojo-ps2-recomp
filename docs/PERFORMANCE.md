@@ -171,7 +171,7 @@ limit should expect about 0% FPS gain; CPU-limited PCs require their own tests.
   runtime was retained.
 
 The queue-only work was held before publishing v1.0.0 and is included in the
-v1.1.0 candidate, retaining rc.7 as the previous published release. The owner completed the requested approximately five-minute
+v1.1.0 release, retaining rc.7 as the previous published release. The owner completed the requested approximately five-minute
 normal-speed playtest and reported no issues noticed. A full playthrough and
 broader hardware qualification remain open; this is not a claim of full-game
 compatibility on every supported Windows system.

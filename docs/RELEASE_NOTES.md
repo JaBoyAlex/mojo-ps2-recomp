@@ -41,7 +41,11 @@ Automated qualification:
   only link timestamps; the fresh build was checked functionally, not claimed
   byte-for-byte identical.
 
-Final-candidate owner playtest is pending; stable publication is held until it passes.
+The owner completed the requested approximately five-minute normal-speed
+playtest of this final candidate and reported no issues noticed. This is a
+human report, separate from the automated checks.
+This is the first stable release for the supported USA disc and documented
+Windows configuration.
 
 This portable ZIP contains a builder and licensed helpers, **not the game**.
 Supply your own **MOJO! USA PS2 disc, SLUS_207.41, SYSTEM.CNF VER 1.02**, with

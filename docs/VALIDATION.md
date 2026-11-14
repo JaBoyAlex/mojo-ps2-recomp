@@ -23,7 +23,9 @@ v1.1.0 automated qualification (2026-11-14):
   its different binary bytes were qualified by replay, audio and frame tests.
 - Final installed-build performance comparisons are in PERFORMANCE.md. The
   official RecompLauncher schema and all seven Python synthetic tests passed.
-- Final-candidate owner playtest is pending; stable publication is held.
+- The owner completed the requested approximately five-minute normal-speed
+  playtest of the final candidate and reported no issues noticed. This human
+  report is separate from the automated results.
 
 Earlier queue-only candidate (unreleased v1.0.0 work): owner completed the requested approximately
 five-minute normal-speed playtest and reported no issues noticed. This is a
