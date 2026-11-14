@@ -8,6 +8,7 @@ import subprocess
 def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--engine',required=True,type=Path)
+    p.add_argument('--sdl2',type=Path,help='Verified SDL2 development directory prepared by packaging')
     args=p.parse_args()
     engine=args.engine.resolve()
     root=Path(__file__).resolve().parents[1]
@@ -16,8 +17,10 @@ def main():
         module=importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
         module.apply(engine)
         module.apply(engine)
-    sdl=engine/'third_party/sdl2'
+    sdl=args.sdl2.resolve() if args.sdl2 else engine/'third_party/sdl2'
     if not (sdl/'lib/libSDL2.dll.a').exists():
+        if args.sdl2:
+            p.error('SDL2 development files are missing; run scripts/package.ps1 to fetch the pinned package.')
         subprocess.run([shutil.which('bash.exe'),'scripts/fetch_sdl2.sh'],cwd=engine,check=True)
     build=root/'build/camera-tests'; build.mkdir(parents=True,exist_ok=True)
     exe=build/'camera-controls-test.exe'

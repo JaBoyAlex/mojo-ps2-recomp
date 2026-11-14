@@ -18,6 +18,8 @@ function Get-Source([string]$Url, [string]$Hash, [string]$Name, [string]$Directo
 }
 $engineSource = Get-Source 'https://codeload.github.com/exoteric33/ps2-native-recomp/zip/57ef1197c0b818b9a4e1dbb98b1588da38586ffb' '12a78a14e2879c586e60239442ed5ef1b8a4d341ec0483bc2014f6988bb16930' 'engine' 'ps2-native-recomp-57ef1197c0b818b9a4e1dbb98b1588da38586ffb'
 $chdSource = Get-Source 'https://codeload.github.com/rtissera/libchdr/zip/93d8c239ff0d4e8d7722985992649fce12d2463b' '59238fbd59428d2b540f41149de5dc0794d8d9050ebc1ae82d24096f3f60ab62' 'libchdr' 'libchdr-93d8c239ff0d4e8d7722985992649fce12d2463b'
+# Same SDL2 development package/hash pinned by upstream scripts/fetch_sdl2.sh.
+$sdlSource = Get-Source 'https://github.com/libsdl-org/SDL/releases/download/release-2.32.10/SDL2-devel-2.32.10-mingw.zip' 'f15cff5fca62ec9381a016ef1d42a95c638cd72d2f226ba5781c76fe43dbd1ac' 'sdl2' 'SDL2-2.32.10'
 if (!$ToolDir) { $ToolDir = Join-Path $buildRoot 'tools' }
 # Helper packaging needs no game-build shell. Reuse upstream download/hash checks
 # for the four tools actually used here, without fetching MinGit or BusyBox.
@@ -36,7 +38,7 @@ cmake -S $projectRoot -B "$buildRoot/helpers" -G Ninja -DCMAKE_C_COMPILER=clang 
 if ($LASTEXITCODE -ne 0) { throw 'Configure failed' }
 cmake --build "$buildRoot/helpers" -j 4
 if ($LASTEXITCODE -ne 0) { throw 'Helper build failed' }
-& "$ToolDir/python/python.exe" "$projectRoot/scripts/test_camera.py" --engine $engineSource
+& "$ToolDir/python/python.exe" "$projectRoot/scripts/test_camera.py" --engine $engineSource --sdl2 "$sdlSource/x86_64-w64-mingw32"
 if ($LASTEXITCODE -ne 0) { throw 'Camera controls tests failed' }
 & "$ToolDir/python/python.exe" "$projectRoot/scripts/test_queue.py" --engine $engineSource
 if ($LASTEXITCODE -ne 0) { throw 'Queue regression tests failed' }

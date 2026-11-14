@@ -13,7 +13,7 @@ Build distributable helpers and a release with:
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/package.ps1
 ```
 
-This fetches pinned upstream source/toolchain and libchdr, builds only the original
+This fetches pinned upstream source/toolchain, libchdr and SDL2 for host tests, builds only the original
 bootstrap and CHD reader, runs the publication verifier, and writes a ZIP to
 `dist/`. It never invokes the game recompiler or needs a disc. Release packaging
 uses an explicit source file allowlist plus two known helper executables.
