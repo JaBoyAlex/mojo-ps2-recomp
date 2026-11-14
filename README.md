@@ -5,7 +5,7 @@ A local Windows builder for the USA PlayStation 2 version of **MOJO!**. It uses
 your own verified disc into native PC code. No game files, translated game code,
 BIOS, or prebuilt game executable are distributed.
 
-**Release candidate.** The original working build has been played beyond round
+**v1.1.0 performance candidate.** The original working build has been played beyond round
 10 without reported bugs. This is not a claim of complete game compatibility.
 See [test status and limitations](docs/COMPATIBILITY.md).
 
@@ -28,7 +28,7 @@ before translating anything. No download source for commercial game data is prov
 
 ## Standalone installation
 
-1. Extract `MOJO-Recomp-v1.0.0-rc.7-Windows-x64.zip` into a writable folder.
+1. Extract `MOJO-Recomp-v1.1.0-Windows-x64.zip` into a writable folder.
 2. Run `MOJO.exe` and choose your disc image. For BIN/CUE, keep the two files together.
 3. Let setup download checksum-pinned open-source build tools (about 300 MB,
    plus runtime dependencies). Allow at least 5 GB free and several minutes.

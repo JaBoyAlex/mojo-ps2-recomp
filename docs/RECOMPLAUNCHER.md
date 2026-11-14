@@ -34,3 +34,8 @@ GitLab** in beta 37. The Developer tab's **Check** action was unavailable to the
 test account. See VALIDATION.md for the executed checks. The RecompStore
 submission was received for review. The catalog listing and Easy Setup badge
 are controlled by RecompStore and can be followed at https://recompstore.com/hub.
+
+The v1.1.0 queue and page-clear optimizations are automatic internal runtime
+changes. Existing launcher settings and save paths are unchanged. A new pipeline
+identifier makes either installation method rebuild the native runtime locally;
+no copyrighted generated executable is downloaded in the update.

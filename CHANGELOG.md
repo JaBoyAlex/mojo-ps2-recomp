@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.1.0
+
+- Clear eligible complete GS pages directly instead of rasterizing their pixels,
+  preserving masks, depth, blending and every internal-resolution sample.
+  Strict eligibility checks retain the existing renderer for other draws.
+- Add native guard tests and a synthetic whole-graphics-memory GPU fixture.
+- Avoid repeated integer division for power-of-two graphics/VU queue offsets,
+  retaining the original arithmetic for other capacities. Packet ordering and
+  synchronization are unchanged. See docs/PERFORMANCE.md for scope and evidence.
+- Add a synthetic native queue regression test to release packaging checks.
+
 ## 1.0.0-rc.7
 
 - Extend the 2D upscaler to paletted menu and HUD graphics, including the

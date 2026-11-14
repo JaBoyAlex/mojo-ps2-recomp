@@ -28,5 +28,9 @@ cmake --build "$buildRoot/helpers" -j 4
 if ($LASTEXITCODE -ne 0) { throw 'Helper build failed' }
 & "$ToolDir/python/python.exe" "$projectRoot/scripts/test_camera.py" --engine $engineSource
 if ($LASTEXITCODE -ne 0) { throw 'Camera controls tests failed' }
+& "$ToolDir/python/python.exe" "$projectRoot/scripts/test_queue.py" --engine $engineSource
+if ($LASTEXITCODE -ne 0) { throw 'Queue regression tests failed' }
+& "$ToolDir/python/python.exe" "$projectRoot/scripts/test_fast_clear.py" --engine $engineSource
+if ($LASTEXITCODE -ne 0) { throw 'Fast-clear guard tests failed' }
 & "$ToolDir/python/python.exe" "$projectRoot/scripts/package.py"
 if ($LASTEXITCODE -ne 0) { throw 'Release audit failed' }

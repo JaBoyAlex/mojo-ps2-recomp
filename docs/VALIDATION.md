@@ -1,5 +1,38 @@
 # Validation record
 
+v1.1.0 automated qualification (2026-11-14):
+
+- 39,871-frame owner-recorded session replayed on the multithreaded candidate;
+  all 2,658 checkpoints matched.
+- Both the upgraded build and a fresh standalone build matched all 206 boot
+  replay checkpoints and audio bytes in single- and multithreaded runs. Each
+  also matched 32 movement-frame pairs across scales 1-4 and Upscale 2D off/on.
+- The native clear guard passed 433 cases and 65,536 blend identities. The GPU
+  fixture matched full randomized graphics memory in all 96 cases. Six
+  multithreaded stress runs passed without the unsafe timing-diagnostic mix.
+- Fresh standalone ISO preparation downloaded fresh pinned engine source and
+  reused only open-source tool downloads. It built successfully and passed a
+  3,100-frame standalone smoke. This was not a clean VM or a tool-download test.
+- The SDK Level 3 prepare command upgraded the isolated installation from a
+  verified CHD, emitting progress through completion. All 16 protected files
+  matched their original hashes, including saves, settings, disc and recordings;
+  the previous runtime remained available. A subsequent standalone 3,100-frame
+  smoke also passed without changing those files.
+- The upgraded runtime matched the regression candidate after normalizing only
+  PE link timestamps. Runtime/host/generated source matched in the fresh build;
+  its different binary bytes were qualified by replay, audio and frame tests.
+- Final installed-build performance comparisons are in PERFORMANCE.md. The
+  official RecompLauncher schema and all seven Python synthetic tests passed.
+- Final-candidate owner playtest is pending; stable publication is held.
+
+Earlier queue-only candidate (unreleased v1.0.0 work): owner completed the requested approximately
+five-minute normal-speed playtest and reported no issues noticed. This is a
+human report, separate from automated results.
+
+Queue-offset optimization: see [the performance report](PERFORMANCE.md) for the
+research, measured comparisons, exact regression scope and limitations. The
+release uses the same standalone and RecompLauncher prepare pipeline.
+
 2D artwork upscaling (1.0.0-rc.7):
 
 - Compared matched Ultra frames from both studio intros and the MOJO! title

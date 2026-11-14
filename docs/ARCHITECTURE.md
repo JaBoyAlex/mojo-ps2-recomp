@@ -30,3 +30,12 @@ The native game executable contains translated commercial game code. It, the
 original ELF, generated C++, disc data, caches, memory cards and states remain
 local and must never be committed, uploaded as artifacts, or released.
 Only bootstrap/helper binaries are distributable in the portable release.
+
+The queue-offset patch uses exact bit-mask indexing for power-of-two host queues,
+with the original modulo fallback. It changes no atomics or emulation timing.
+See [performance research and validation](PERFORMANCE.md).
+
+The page-clear patch proves a complete, constant 32-bit GS page fill and submits
+an exact linear compute kernel. Unproved cases retain the existing rasterizer.
+It changes neither game data nor the F1/launcher settings format. Native guard
+and synthetic GPU fixtures use no commercial game content.
