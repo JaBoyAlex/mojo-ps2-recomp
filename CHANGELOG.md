@@ -10,6 +10,8 @@
   retaining the original arithmetic for other capacities. Packet ordering and
   synchronization are unchanged. See docs/PERFORMANCE.md for scope and evidence.
 - Add a synthetic native queue regression test to release packaging checks.
+- Package the redistributable helpers using four pinned tools, avoiding
+  unnecessary MinGit and BusyBox downloads in release CI.
 
 ## 1.0.0-rc.7
 

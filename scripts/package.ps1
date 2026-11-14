@@ -19,8 +19,18 @@ function Get-Source([string]$Url, [string]$Hash, [string]$Name, [string]$Directo
 $engineSource = Get-Source 'https://codeload.github.com/exoteric33/ps2-native-recomp/zip/57ef1197c0b818b9a4e1dbb98b1588da38586ffb' '12a78a14e2879c586e60239442ed5ef1b8a4d341ec0483bc2014f6988bb16930' 'engine' 'ps2-native-recomp-57ef1197c0b818b9a4e1dbb98b1588da38586ffb'
 $chdSource = Get-Source 'https://codeload.github.com/rtissera/libchdr/zip/93d8c239ff0d4e8d7722985992649fce12d2463b' '59238fbd59428d2b540f41149de5dc0794d8d9050ebc1ae82d24096f3f60ab62' 'libchdr' 'libchdr-93d8c239ff0d4e8d7722985992649fce12d2463b'
 if (!$ToolDir) { $ToolDir = Join-Path $buildRoot 'tools' }
-& "$engineSource/scripts/portable.ps1" -Dir $ToolDir
-if ($LASTEXITCODE -and $LASTEXITCODE -ne 0) { throw 'Portable toolchain failed' }
+# Helper packaging needs no game-build shell. Reuse upstream download/hash checks
+# for the four tools actually used here, without fetching MinGit or BusyBox.
+& {
+    param($Engine, $Directory)
+    . "$Engine/scripts/portable.ps1" -Dir $Directory
+    New-Item -ItemType Directory -Force -Path $Dir,$archives | Out-Null
+    foreach ($tool in @($tools | Where-Object { $_.Name -in @('llvm-mingw','cmake','ninja','python') })) {
+        if (!(Is-Installed $tool)) { Install-Tool $tool }
+        Show-Version $tool.Name (Join-Path (Join-Path $Dir $tool.Name) $tool.Probe) @('--version')
+    }
+    Write-EnvFiles
+} $engineSource $ToolDir
 . "$ToolDir/env.ps1" -Quiet
 cmake -S $projectRoot -B "$buildRoot/helpers" -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release "-DLIBCHDR_SOURCE=$chdSource"
 if ($LASTEXITCODE -ne 0) { throw 'Configure failed' }

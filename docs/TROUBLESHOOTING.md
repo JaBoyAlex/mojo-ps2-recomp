@@ -6,6 +6,9 @@
 - **Dependencies/write access (21):** use a writable local folder outside Program
   Files, free at least 5 GB, check network access, and retry. No administrator
   permission is required. A read-only portable folder is not supported.
+  The upstream BusyBox download host has intermittently returned HTTP 403 or
+  timed out. Retry setup when it is reachable; cached tools are reused. Retain
+  the pinned checksums rather than substituting an unverified executable.
 - **Compilation (22):** close other heavy workloads and retry. Upstream's bounded
   compile parallelism is at most six jobs. Do not upload raw logs from userdata/cache.
 - **Timeout (23):** rerun setup; downloaded tools are reused. Cancellation releases

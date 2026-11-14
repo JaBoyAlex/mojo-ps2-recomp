@@ -17,6 +17,9 @@ This fetches pinned upstream source/toolchain and libchdr, builds only the origi
 bootstrap and CHD reader, runs the publication verifier, and writes a ZIP to
 `dist/`. It never invokes the game recompiler or needs a disc. Release packaging
 uses an explicit source file allowlist plus two known helper executables.
+Packaging fetches only Clang, CMake, Ninja and Python through upstream's existing
+hash-checked downloader. It does not need MinGit or BusyBox. First-time game
+setup still uses upstream's complete portable toolchain.
 
 Use `python scripts/verify_publication.py` before committing. Install Gitleaks
 and run `gitleaks dir . --redact=100` on a clean checkout, then `gitleaks git .

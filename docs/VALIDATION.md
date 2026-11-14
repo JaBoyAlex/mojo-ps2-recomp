@@ -26,6 +26,10 @@ v1.1.0 automated qualification (2026-11-14):
 - The owner completed the requested approximately five-minute normal-speed
   playtest of the final candidate and reported no issues noticed. This human
   report is separate from the automated results.
+- Helper packaging passed with only Clang, CMake, Ninja and Python in its tool
+  directory, with neither MinGit nor BusyBox present. The full player builder
+  is unchanged. Two earlier CI attempts failed fetching BusyBox from its host;
+  release packaging no longer downloads that unused dependency.
 
 Earlier queue-only candidate (unreleased v1.0.0 work): owner completed the requested approximately
 five-minute normal-speed playtest and reported no issues noticed. This is a

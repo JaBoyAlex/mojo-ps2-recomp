@@ -59,6 +59,9 @@ Extract `MOJO-Recomp-v1.1.0-Windows-x64.zip` into a writable folder and run
 open-source tools and compiles using your disc; the game executable is never
 shipped. Both installation paths use the same builder and preserve userdata.
 Back up userdata before updating. No separate EXE installer is needed.
+First setup depends on the upstream tool hosts. BusyBox's host has intermittently
+returned HTTP 403 or timed out; retry setup when it is reachable. Cached tools
+are reused. Release packaging now omits this tool, which it does not need.
 
 Windows 11/NVIDIA is the tested configuration. Broader hardware coverage, a
 full game playthrough and real progression-save/restart qualification remain
