@@ -12,7 +12,7 @@
   },
   "prepare": {
     "program": [
-      "MOJO.exe"
+      "MOJO.exe", "MOJO", "MOJO.app/Contents/MacOS/MOJO"
     ],
     "args": [
       "--prepare",
@@ -24,7 +24,7 @@
   },
   "start": {
     "program": [
-      "MOJO.exe"
+      "MOJO.exe", "MOJO", "MOJO.app/Contents/MacOS/MOJO"
     ],
     "args": [
       "--game",

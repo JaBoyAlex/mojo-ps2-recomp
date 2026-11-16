@@ -8,6 +8,9 @@ BIOS, or prebuilt game executable are distributed.
 **First stable release: v1.1.0.** The original working build has been played beyond round
 10 without reported bugs. This is not a claim of complete game compatibility.
 See [test status and limitations](docs/COMPATIBILITY.md).
+Linux x86-64 and macOS Apple Silicon/Intel support is being validated on a
+development branch; see [native platform status and prerequisites](docs/PLATFORMS.md).
+The stable downloadable release remains Windows-only until platform testing is complete.
 The update reduces framebuffer-clear and host-queue work; see the
 [measured performance results](docs/PERFORMANCE.md).
 
