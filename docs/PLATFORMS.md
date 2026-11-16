@@ -72,15 +72,48 @@ indices include the host architecture, avoiding reuse of incompatible binaries.
 
 ## Validation boundary
 
+The native Linux standalone package has also imported the owner's verified
+CUE/BIN, generated and compiled MOJO!, and completed a 3,100-frame headless
+boot. The Level 3 headless preparation command accepted the owner's matching
+CHD through the same builder. The Linux RecompLauncher desktop application
+imported the package, launched the game and changed its Upscale 2D preference.
+These private tests used Ubuntu 24.04 under WSL2; no game material was uploaded.
+
+The owner reached Stage 5 in an isolated Linux GPU prototype. WSL's installed
+Vulkan driver initially used CPU rendering. A separately built experimental
+Mesa Dozen bridge selected the host NVIDIA GPU, but is nonconformant and is
+**not included or enabled by these packages**. WSL audio, pacing and startup
+movie performance remain under investigation. This is not a native Linux
+hardware performance qualification. The WSL instance exposes no controller
+devices; the owner's gameplay test used keyboard input.
+
+After the clock correction, a roughly 7.5-minute session kept normal frame
+pacing with zero sound queue underruns and zero dropped samples reported by
+the runtime. The owner still heard crackling and noticed intermittent visual
+cadence changes. A standalone SDL steady-tone test reproduced uneven sound
+with MOJO! closed (48 kHz, 1,024-sample callbacks; measured maximum callback
+gap 42.4 ms). This establishes an audio-path problem independent of MOJO!,
+but does not prove every reported issue is environmental. Regular Linux
+hardware testing is still needed. Raw audio, saves and logs remain private.
+
+Linux host pacing now uses `std::chrono::steady_clock`. On this WSL host,
+SDL's raw performance counter advanced 3.273 seconds during 3.000 seconds of
+monotonic elapsed time. Mixing that counter with normal scheduling caused
+incorrect frame statistics and sound pacing. The replacement applies only to
+host timing, leaves PS2 clocks and 60/50 Hz targets intact, and has an independent
+elapsed-time regression check. Windows and macOS retain their existing clocks.
+
 Native CI runs separate Linux, Apple Silicon and Intel Mac runners. It compiles
 native helpers and the patched runtime, generates code from independently
 authored synthetic MIPS instructions, starts it, tests virtual controllers,
 saves, damaged disc rejection, VU operations, queue ordering, fast clear guards,
 live dynamic-library compilation/loading and incremental rebuilds. These tests
 must succeed before artifacts are accepted. No commercial fixtures or private
-gameplay files are uploaded to CI. Physical controllers, real audio output,
-visible Vulkan/Metal rendering, MOJO! disc preparation and gameplay still need
-native-system testing. GPU results are not assumed bit-identical across APIs.
+gameplay files are uploaded to CI. Physical controllers and real-system audio,
+visible Vulkan/Metal rendering, and owner-disc gameplay still need regular
+Linux/macOS hardware testing. Both Mac architectures have synthetic CI coverage
+only; no Mac owner-disc gameplay test has been completed. GPU results are not
+assumed bit-identical across APIs.
 
 No new performance improvement is claimed. Windows engine, timing and gameplay
 patches remain pinned; its normal regression suite remains required.

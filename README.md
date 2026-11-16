@@ -11,6 +11,10 @@ See [test status and limitations](docs/COMPATIBILITY.md).
 Linux x86-64 and macOS Apple Silicon/Intel support is being validated on a
 development branch; see [native platform status and prerequisites](docs/PLATFORMS.md).
 The stable downloadable release remains Windows-only until platform testing is complete.
+The **v1.2.0-alpha.1** development prerelease adds native Linux x64 and macOS
+ARM64/x64 packages. It is experimental; read its
+[installation requirements and test limitations](docs/NATIVE_RELEASE_NOTES.md)
+before opting in. Native hardware feedback is welcome.
 The update reduces framebuffer-clear and host-queue work; see the
 [measured performance results](docs/PERFORMANCE.md).
 

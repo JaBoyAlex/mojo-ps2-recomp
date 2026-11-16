@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.0-alpha.1 (experimental)
+
+- Add native Linux x64 and macOS ARM64/x64 helpers, shared Python setup,
+  verified native dependencies and architecture-specific build caches.
+- Extend RecompLauncher Level 3 preparation, settings and save paths to Unix.
+- Add native CI generation/startup, virtual input, save and VU regression checks,
+  dynamic-library loading and platform archive security verification.
+- Use a steady Linux host clock after measuring a WSL raw-clock mismatch;
+  preserve guest clocks and normal speed limits.
+- Keep Windows v1.1.0 as the stable release. See docs/NATIVE_RELEASE_NOTES.md
+  for prerequisites, WSL test limitations and unverified native gameplay.
+
 ## 1.1.0
 
 - Clear eligible complete GS pages directly instead of rasterizing their pixels,

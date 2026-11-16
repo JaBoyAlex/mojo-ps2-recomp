@@ -6,11 +6,13 @@ import subprocess
 import sys
 import zipfile
 root=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(root/'builder'))
+from build import VERSION
 subprocess.run([sys.executable,str(root/'scripts/verify_publication.py')],check=True)
 files=json.loads((root/'publication-files.json').read_text())
 dest=root/'dist'
 dest.mkdir(exist_ok=True)
-archive=dest/'MOJO-Recomp-v1.1.0-Windows-x64.zip'
+archive=dest/f'MOJO-Recomp-v{VERSION}-Windows-x64.zip'
 with zipfile.ZipFile(archive,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
     for name in sorted(files): z.write(root/name,name)
     for name in ('MOJO.exe','chd_to_iso.exe'): z.write(root/'build/helpers'/name,name)

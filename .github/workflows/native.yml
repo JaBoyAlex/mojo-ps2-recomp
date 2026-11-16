@@ -38,8 +38,8 @@ jobs:
         with:
           name: native-helpers-${{ matrix.runner }}
           path: |
-            dist/*native-preview*.zip
-            dist/*native-preview*.tar.gz
-            dist/*native-preview*.sha256
+            dist/MOJO-Recomp-*-macOS-*.zip
+            dist/MOJO-Recomp-*-Linux-*.tar.gz
+            dist/MOJO-Recomp-*.sha256
           if-no-files-found: error
           retention-days: 7

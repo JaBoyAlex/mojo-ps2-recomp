@@ -1,6 +1,8 @@
 {
   "$schema": "https://recomplauncher.com/schema/recomplauncher.json",
   "format": 1,
+  "name": "MOJO! Recomp",
+  "repo": "JaBoyAlex/mojo-ps2-recomp",
   "game": {
     "kind": "iso",
     "label": "Your MOJO! USA PlayStation 2 disc image (SLUS_207.41, SYSTEM.CNF VER 1.02). Choose .iso, lossless single-track .chd, or .cue with its matching .bin beside it. Exact hashes: docs/COMPATIBILITY.md. First setup downloads about 300 MB of open-source build tools and needs several GB free.",
