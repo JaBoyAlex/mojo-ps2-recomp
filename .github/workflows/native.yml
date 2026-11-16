@@ -1,8 +1,6 @@
 name: Native platform validation
 on:
-  push:
-    branches: [codex/native-platforms]
-  pull_request:
+  workflow_call:
   workflow_dispatch:
 permissions:
   contents: read
@@ -19,6 +17,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.13'
