@@ -50,12 +50,24 @@ def main():
     args=parser.parse_args()
     failures=[]
     if args.archive:
-        with zipfile.ZipFile(args.archive) as archive:
-            names=archive.namelist()
+        if args.archive.name.endswith('.tar.gz'):
+            context=tarfile.open(args.archive,'r:gz')
+        else:
+            context=zipfile.ZipFile(args.archive)
+        with context as archive:
+            is_tar=isinstance(archive,tarfile.TarFile)
+            names=archive.getnames() if is_tar else archive.namelist()
+            def contents(name):
+                return archive.extractfile(name).read() if is_tar else archive.read(name)
             if len(names)!=len(set(names)): failures.append(('archive','duplicate-path'))
             normalized=set()
             for name in names:
-                if name.endswith('/'): continue
+                member=archive.getmember(name) if is_tar else archive.getinfo(name)
+                if (member.isdir() if is_tar else member.is_dir()): continue
+                if (not member.isfile() if is_tar else (member.external_attr >> 16) & 0o170000 == 0o120000):
+                    failures.append((name,'archive-link-or-special-file')); continue
+                if (member.size if is_tar else member.file_size)>4*1024*1024:
+                    failures.append((name,'unexpected-size')); continue
                 logical=name
                 if name.startswith('MOJO.app/Contents/Resources/'):
                     logical=name[len('MOJO.app/Contents/Resources/'):]
@@ -64,14 +76,13 @@ def main():
                 elif name=='MOJO.app/Contents/_CodeSignature/CodeResources':
                     # Apple's generated resource hash plist is the only extra signed-bundle file.
                     import plistlib
-                    value=plistlib.loads(archive.read(name))
+                    value=plistlib.loads(contents(name))
+                    failures+=check('src/Info.plist',contents(name),True)
                     if not isinstance(value,dict) or not set(value).issubset({'files','files2','rules','rules2'}):
                         failures.append((name,'invalid-code-signature'))
                     continue
                 normalized.add(logical)
-                failures+=check(logical,archive.read(name),True)
-                if (archive.getinfo(name).external_attr >> 16) & 0o170000 == 0o120000:
-                    failures.append((name,'archive-symlink'))
+                failures+=check(logical,contents(name),True)
             helpers={'MOJO.exe','chd_to_iso.exe'} if 'MOJO.exe' in normalized else {'MOJO','chd_to_iso'}
             if not helpers.issubset(normalized): failures.append(('archive','missing-helper'))
             if not ALLOWED.issubset(normalized): failures.append(('archive','missing-source-or-notice'))

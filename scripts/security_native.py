@@ -31,10 +31,14 @@ def main():
             scanner=work/'gitleaks';scanner.write_bytes(tar.extractfile(member).read());scanner.chmod(0o755)
         subprocess.run([sys.executable,str(ROOT/'scripts/verify_publication.py'),'--git'],check=True)
         subprocess.run([str(scanner),'git',str(ROOT),'--log-opts=--all','--redact=100','--no-banner'],check=True)
-        for archive in (ROOT/'dist').glob('*native-preview*.zip'):
+        for archive in (ROOT/'dist').glob('*native-preview*'):
+            if not archive.name.endswith(('.zip','.tar.gz')): continue
             subprocess.run([sys.executable,str(ROOT/'scripts/verify_publication.py'),'--archive',str(archive)],check=True)
             dest=work/archive.stem;dest.mkdir()
-            with zipfile.ZipFile(archive) as z:z.extractall(dest)
+            if archive.name.endswith('.tar.gz'):
+                with tarfile.open(archive) as tar:tar.extractall(dest,filter='data')
+            else:
+                with zipfile.ZipFile(archive) as z:z.extractall(dest)
             subprocess.run([str(scanner),'dir',str(dest),'--redact=100','--no-banner'],check=True)
 
 if __name__=='__main__':main()

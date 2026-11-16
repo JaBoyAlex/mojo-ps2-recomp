@@ -1,5 +1,12 @@
 # Building and maintaining
 
+Native Unix development: see [platform setup and validation](PLATFORMS.md).
+On a native Linux/Mac host, run `python3 scripts/native_ci.py` for synthetic
+runtime validation and `python3 scripts/package_native.py` to package only
+redistributable helpers. These commands require native Clang and CMake/Ninja;
+CI records their versions. Packaging produces Linux tar.gz or macOS app ZIP
+archives with the appropriate Level 3 manifest. It never needs a MOJO! disc.
+
 Source checkout needs Windows PowerShell 5.1, internet and a writable folder.
 `Start-MOJO.cmd -Game "D:\Games\Mojo.iso"` fetches verified tools and builds the
 game locally. `-Prepare` builds without opening the game. `-Smoke` runs a bounded

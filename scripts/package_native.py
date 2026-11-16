@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import zipfile
+import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/'builder'))
@@ -48,6 +49,7 @@ def main():
     if system == 'macos':
         shutil.copyfile(ROOT/'src/Info.plist',stage/'MOJO.app/Contents/Info.plist')
         # Ad-hoc integrity signing permits local execution; this is NOT Developer ID signing or notarization.
+        subprocess.run(['codesign','--force','--sign','-',str(resources/'chd_to_iso')],check=True)
         subprocess.run(['codesign','--force','--sign','-',str(stage/'MOJO.app')],check=True)
         subprocess.run(['codesign','--verify','--strict',str(stage/'MOJO.app')],check=True)
     else:
@@ -56,12 +58,18 @@ def main():
     subprocess.run([sys.executable,str(ROOT/'scripts/check_manifest.py'),str(stage/'recomplauncher.json')],check=True)
     dist = ROOT/'dist'; dist.mkdir(exist_ok=True)
     # Version stays separate from the stable release until real platform gameplay is verified.
-    archive = dist/f'MOJO-Recomp-v1.1.0-native-preview-{system.capitalize()}-{arch}.zip'
-    with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
-        for path in sorted(stage.rglob('*')):
-            if path.is_file(): z.write(path,path.relative_to(stage).as_posix())
+    extension='.zip' if system=='macos' else '.tar.gz'
+    archive = dist/f'MOJO-Recomp-v1.1.0-native-preview-{system.capitalize()}-{arch}{extension}'
+    if system=='macos':
+        with zipfile.ZipFile(archive,'w',zipfile.ZIP_DEFLATED,compresslevel=9) as z:
+            for path in sorted(stage.rglob('*')):
+                if path.is_file(): z.write(path,path.relative_to(stage).as_posix())
+    else:
+        with tarfile.open(archive,'w:gz') as tar:
+            for path in sorted(stage.rglob('*')):
+                if path.is_file(): tar.add(path,arcname=path.relative_to(stage).as_posix(),recursive=False)
     subprocess.run([sys.executable,str(ROOT/'scripts/verify_publication.py'),'--archive',str(archive)],check=True)
-    archive.with_suffix('.zip.sha256').write_text(build.digest(archive)+'  '+archive.name+'\n')
+    Path(str(archive)+'.sha256').write_text(build.digest(archive)+'  '+archive.name+'\n')
     executable = stage/'MOJO.app/Contents/MacOS/MOJO' if system == 'macos' else stage/'MOJO'
     subprocess.run([str(executable),'--self-test'],check=True)
     print('Packaged audited native helpers for '+system+' '+arch)
