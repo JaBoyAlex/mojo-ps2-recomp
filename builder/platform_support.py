@@ -8,6 +8,13 @@ def apply(engine):
         text = path.read_text(encoding='utf-8')
         text = text.replace('[ "${BASH_VERSINFO:-0}" -lt 4 ]', '[ "${BASH_VERSINFO:-0}" -lt 3 ]')
         text = text.replace('${source_path,,}', '$(printf \'%s\' "$source_path" | tr \'[:upper:]\' \'[:lower:]\')')
+        # Bash <=4.3 treats expansion of an empty array as unset under -u.
+        # Use its defined-array idiom rather than disabling fail-fast checks.
+        for array in ('pnach', 'wide', 'setup', 'modules', 'overlays', 'toggles', 'patches', 'presses'):
+            original = '"${' + array + '[@]}"'
+            guarded = '${' + array + '[@]+' + original + '}'
+            if guarded not in text: text = text.replace(original, guarded)
+        text = text.replace('this script needs bash 4 or newer', 'this script needs bash 3 or newer')
         path.write_text(text, encoding='utf-8')
     # ARM64 can fuse arithmetic even without x86 AVX/FMA. Preserve PS2 rounding.
     path = Path(engine)/'scripts/cxx.sh'

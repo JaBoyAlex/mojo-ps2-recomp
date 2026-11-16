@@ -55,7 +55,7 @@ def configure(root, state):
         build.progress(.01, 'Preparing verified native build tools')
         for name in ('cmake', 'ninja'):
             package = unpack(name+'-'+system, cache)
-            binary = package/name/'data/bin'
+            binary = package/name/'data/bin' if name == 'cmake' else package/'ninja-1.11.1.4.data/scripts'
             for tool in binary.iterdir():
                 if tool.is_file(): tool.chmod(tool.stat().st_mode | stat.S_IXUSR)
             os.environ['PATH'] = str(binary)+os.pathsep+os.environ.get('PATH', '')
