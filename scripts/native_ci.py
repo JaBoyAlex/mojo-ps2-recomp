@@ -1,8 +1,10 @@
 """Native-host validation using synthetic code only. No MOJO! data enters CI."""
 import importlib.util
+import json
 import os
 from pathlib import Path
 import struct
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -57,6 +59,11 @@ def main():
     button(0, SDL_CONTROLLER_BUTTON_GUIDE, true);  // close the real Guide menu
     button(0, SDL_CONTROLLER_BUTTON_GUIDE, false);''',1)
         pad.write_text(text)
+        cmake=engine/'CMakeLists.txt'
+        with cmake.open('a') as source:
+            source.write('\nadd_executable(native_clear_gpu '+json.dumps(str(ROOT/'tests/fast_clear_gpu.cpp'))+')\n'
+                         'target_include_directories(native_clear_gpu PRIVATE "${CMAKE_SOURCE_DIR}/runtime/src")\n'
+                         'target_link_libraries(native_clear_gpu PRIVATE ps2runtime)\n')
         # Independently authored MIPS loop in a minimal ELF. It contains no commercial bytes.
         elf=bytearray(0x110)
         elf[:16]=bytes([127,69,76,70,1,1,1])+bytes(9)
@@ -75,12 +82,20 @@ def main():
             '-DCMAKE_CXX_COMPILER='+compiler,'-DPS2_GENERATED='+str(generated))
         # The upstream ps2vuregtest CMake target links stubbed globals to the full
         # runtime (duplicate symbols); use its standalone code-generation suites.
-        targets=['ps2run','ps2padtest','ps2savetest','ps2discinputtest','ps2bigstacktest']
+        targets=['ps2run','ps2padtest','ps2savetest','ps2discinputtest','ps2bigstacktest','native_clear_gpu']
         run('cmake','--build',native,'-j','3','--target',*targets)
-        for target in targets[2:]:run(native/target)
+        for target in targets[2:-1]:run(native/target)
         env=os.environ.copy();env['SDL_VIDEODRIVER']='dummy';env['SDL_AUDIODRIVER']='dummy'
         run(native/'ps2padtest',env=env)
         run(native/'ps2run',fixture,'--frames','3',env=env)
+        for scale in range(1,5):
+            output=[]
+            for enabled in ('0','1'):
+                graphics=os.environ.copy();graphics.update(PS2_SCALE=str(scale),PS2_FAST_CLEAR=enabled)
+                result=subprocess.run([str(native/'native_clear_gpu')],env=graphics,check=True,capture_output=True,text=True,timeout=120)
+                output.append(result.stdout)
+            if output[0]!=output[1]:raise RuntimeError('GPU clear regression at scale '+str(scale))
+        print('PASS: 96 GPU clear cases matched within the native backend at all four scales',flush=True)
         run(sys.executable,engine/'scripts/test_vu0_codegen.py')
         run(sys.executable,engine/'scripts/test_vu_codegen.py',compiler)
         # Build production controls and portable queue guards through a small CMake harness.
@@ -105,6 +120,8 @@ target_link_libraries(live PRIVATE ${CMAKE_DL_LIBS})
         # Upstream's synthetic fixture predates hidden-visibility live libraries. Export only its test symbols.
         link=engine/'tests/live_link.cpp'
         text=link.read_text().replace('extern \\"C\\" int ps2_live_link_test_', 'extern \\"C\\" __attribute__((visibility(\\"default\\"))) int ps2_live_link_test_')
+        # posix_spawn deliberately requires an absolute compiler path in production.
+        text=text.replace('job.compiler = "clang++";', 'job.compiler = '+json.dumps(shutil.which(compiler))+';')
         link.write_text(text)
         run('cmake','-S',harness,'-B',harness/'out','-G','Ninja','-DCMAKE_CXX_COMPILER='+compiler,
             '-DPROJECT_SOURCE='+str(ROOT),'-DENGINE='+str(engine))
