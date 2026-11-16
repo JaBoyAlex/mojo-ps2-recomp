@@ -15,20 +15,24 @@ case "$target" in
 esac
 cache="$state/cache"
 python="$cache/python-20261110-$target/python/bin/python3"
-if [ ! -x "$python" ]; then
+python_home="$cache/python-20261110-$target"
+if [ ! -x "$python" ] || [ ! -f "$python_home/.complete" ]; then
     mkdir -p "$cache"
     lock="$cache/python-bootstrap.lock"
+    waited=0
     while ! mkdir "$lock" 2>/dev/null; do
         owner=$(cat "$lock/pid" 2>/dev/null || true)
         if [ -n "$owner" ] && ! kill -0 "$owner" 2>/dev/null; then
             rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null || true
         fi
+        waited=$((waited + 1))
+        if [ "$waited" -ge 600 ]; then echo 'Another setup is using the Python cache. Close it and retry.' >&2; exit 24; fi
         sleep 1
     done
     trap 'rm -f "$lock/pid"; rmdir "$lock" 2>/dev/null || true' EXIT
     trap 'exit 23' INT TERM
     echo $$ > "$lock/pid"
-    if [ ! -x "$python" ]; then
+    if [ ! -x "$python" ] || [ ! -f "$python_home/.complete" ]; then
         echo 'progress 0.00 Downloading verified native Python'
         archive="$cache/python-$target.tar.gz"
         url="https://github.com/astral-sh/python-build-standalone/releases/download/20261110/cpython-3.13.18%2B20261110-$target-install_only.tar.gz"
@@ -40,8 +44,12 @@ if [ ! -x "$python" ]; then
         fi
         if [ "$actual" != "$hash" ]; then echo 'Python checksum mismatch.' >&2; exit 21; fi
         mv "$archive.download" "$archive"
-        mkdir -p "$cache/python-20261110-$target"
-        tar -xzf "$archive" -C "$cache/python-20261110-$target" || exit 21
+        staging=$(mktemp -d "$cache/python-unpack.XXXXXX")
+        tar -xzf "$archive" -C "$staging" || exit 21
+        "$staging/python/bin/python3" -I -c 'import argparse, hashlib, json, ssl, zipfile' || exit 21
+        touch "$staging/.complete"
+        if [ -e "$python_home" ]; then mv "$python_home" "$python_home.incomplete.$$"; fi
+        mv "$staging" "$python_home"
     fi
     rm -f "$lock/pid"; rmdir "$lock"
     trap - EXIT INT TERM

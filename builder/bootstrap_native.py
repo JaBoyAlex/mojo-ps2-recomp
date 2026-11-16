@@ -14,6 +14,15 @@ import zipfile
 import build
 import platform_support
 
+def native_compiler():
+    # Distribution packages often install only clang++-19, without clang++.
+    names = [os.environ.get('CXX', ''), 'clang++'] + ['clang++-'+str(v) for v in range(25,16,-1)]
+    compiler = next((shutil.which(name) for name in names if name and shutil.which(name)), None)
+    if not compiler:
+        raise build.Failure(21, 'Install a native Clang C++20 toolchain: Apple Command Line Tools on macOS; clang-19, libc++-19-dev and libc++abi-19-dev on Debian/Ubuntu. See docs/PLATFORMS.md.')
+    os.environ.setdefault('CXX', compiler)
+    return compiler
+
 def fetch(name, cache):
     record = json.loads(Path(__file__).with_name('native-dependencies.json').read_text())[name]
     path = cache/(name + '.zip')
@@ -61,8 +70,7 @@ def configure(root, state):
             for tool in binary.iterdir():
                 if tool.is_file(): tool.chmod(tool.stat().st_mode | stat.S_IXUSR)
             os.environ['PATH'] = str(binary)+os.pathsep+os.environ.get('PATH', '')
-        if not shutil.which('clang++'):
-            raise build.Failure(21, 'Install a native Clang C++20 toolchain: Apple Command Line Tools on macOS; clang-19, libc++-19-dev and libc++abi-19-dev on Debian/Ubuntu. See docs/PLATFORMS.md.')
+        native_compiler()
         engine = next(p for p in unpack('engine', cache).iterdir() if p.is_dir())
         platform_support.apply(engine)
         jobs = str(max(1, min(6, (os.cpu_count() or 2)-2)))

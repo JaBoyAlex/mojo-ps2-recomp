@@ -25,7 +25,7 @@ def executable(name):
     return name + ('.exe' if os.name == 'nt' else '')
 
 def pipeline_id():
-    return PIPELINE if os.name == 'nt' else PIPELINE+'-native-1'
+    return PIPELINE if os.name == 'nt' else PIPELINE+'-native-2'
 
 def acquire_lock(path):
     lock = open(path, 'a+b')
