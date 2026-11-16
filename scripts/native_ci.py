@@ -41,6 +41,21 @@ def main():
             spec=importlib.util.spec_from_file_location(name,ROOT/'builder'/(name+'.py'))
             module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
             module.apply(engine);module.apply(engine)
+        # The pinned pad fixture predates frame-latched input and the Guide menu.
+        # Advance the real latch in this synthetic test (no game loop is running).
+        # This test-only hook is never added by the player's bootstrap/patches.
+        system=engine/'runtime/src/system.cpp'
+        system.write_text(system.read_text()+'\nnamespace ps2 { void native_test_latch_pads() { latch_pads(); } }\n')
+        pad=engine/'host/pad_test.cpp';text=pad.read_text()
+        text=text.replace('    poll_input();\n}', '''    poll_input();
+    if (b == SDL_CONTROLLER_BUTTON_BACK) { SDL_Delay(down ? 310 : 90); poll_input(); }
+}''',1)
+        text=text.replace('poll_input();','frame_input();')
+        text=text.replace('namespace {','namespace ps2 { void native_test_latch_pads(); }\nstatic void frame_input() { poll_input(); ps2::native_test_latch_pads(); }\n\nnamespace {',1)
+        text=text.replace('    button(0, SDL_CONTROLLER_BUTTON_GUIDE, false);', '''    button(0, SDL_CONTROLLER_BUTTON_GUIDE, false);
+    button(0, SDL_CONTROLLER_BUTTON_GUIDE, true);  // close the real Guide menu
+    button(0, SDL_CONTROLLER_BUTTON_GUIDE, false);''',1)
+        pad.write_text(text)
         # Independently authored MIPS loop in a minimal ELF. It contains no commercial bytes.
         elf=bytearray(0x110)
         elf[:16]=bytes([127,69,76,70,1,1,1])+bytes(9)
