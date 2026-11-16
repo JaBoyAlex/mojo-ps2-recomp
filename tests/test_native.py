@@ -14,6 +14,16 @@ spec=importlib.util.spec_from_file_location('native_builder',ROOT/'builder/build
 builder=importlib.util.module_from_spec(spec);spec.loader.exec_module(builder)
 
 class NativeTests(unittest.TestCase):
+    def test_release_scanner_cannot_silently_skip_renamed_archives(self):
+        spec=importlib.util.spec_from_file_location('native_security',ROOT/'scripts/security_native.py')
+        module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+        with tempfile.TemporaryDirectory() as temporary:
+            directory=Path(temporary)
+            with self.assertRaises(SystemExit): module.release_archives(directory)
+            names=('MOJO-Recomp-v1.2.0-alpha.2-Linux-x64.tar.gz','MOJO-Recomp-v1.2.0-alpha.2-macOS-arm64.zip')
+            for name in (*names,names[0]+'.sha256'):(directory/name).write_bytes(b'')
+            self.assertEqual({p.name for p in module.release_archives(directory)},set(names))
+
     def test_linux_clock_patch_is_repeatable_and_platform_limited(self):
         spec=importlib.util.spec_from_file_location('platform_patch',ROOT/'builder/platform_support.py')
         module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)

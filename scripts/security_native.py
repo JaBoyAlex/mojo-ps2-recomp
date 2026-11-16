@@ -16,6 +16,11 @@ HASHES={
     'darwin_x64':'dfe101a4db2255fc85120ac7f3d25e4342c3c20cf749f2c20a18081af1952709',
 }
 
+def release_archives(directory):
+    archives=[p for p in directory.glob('MOJO-Recomp-*') if p.is_file() and p.name.endswith(('.zip','.tar.gz'))]
+    if not archives: raise SystemExit('No native release archives found to scan')
+    return archives
+
 def main():
     system='darwin' if sys.platform=='darwin' else 'linux'
     arch='arm64' if platform.machine().lower() in ('aarch64','arm64') else 'x64'
@@ -31,8 +36,7 @@ def main():
             scanner=work/'gitleaks';scanner.write_bytes(tar.extractfile(member).read());scanner.chmod(0o755)
         subprocess.run([sys.executable,str(ROOT/'scripts/verify_publication.py'),'--git'],check=True)
         subprocess.run([str(scanner),'git',str(ROOT),'--log-opts=--all','--redact=100','--no-banner'],check=True)
-        for archive in (ROOT/'dist').glob('*native-preview*'):
-            if not archive.name.endswith(('.zip','.tar.gz')): continue
+        for archive in release_archives(ROOT/'dist'):
             subprocess.run([sys.executable,str(ROOT/'scripts/verify_publication.py'),'--archive',str(archive)],check=True)
             dest=work/archive.stem;dest.mkdir()
             if archive.name.endswith('.tar.gz'):

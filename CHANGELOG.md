@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.2.0-alpha.1 (experimental)
+## 1.2.0-alpha.2 (experimental)
 
 - Add native Linux x64 and macOS ARM64/x64 helpers, shared Python setup,
   verified native dependencies and architecture-specific build caches.

@@ -1,6 +1,10 @@
-# MOJO! Recomp v1.2.0-alpha.1 - native platform preview
+# MOJO! Recomp v1.2.0-alpha.2 - native platform preview
 
 **Experimental prerelease. Windows v1.1.0 remains the recommended stable release.**
+
+The earlier alpha.1 tag was a packaging validation candidate; no release assets
+were published. Alpha.2 makes native archive secret scanning fail closed when
+no archives are found and includes a regression check for release filename changes.
 
 Adds native Linux x86-64 and macOS Apple Silicon/Intel builders while retaining
 the working ps2-native-recomp pipeline, renderer optimizations, camera options,

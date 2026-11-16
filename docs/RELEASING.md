@@ -19,7 +19,7 @@ GitHub Secret Scanning and Push Protection availability depends on repository an
 account features. Enable them where available; record unavailable controls explicitly.
 Only the owner can authorize changing repository visibility to public.
 
-The native preview workflow accepts only the reviewed v1.2.0-alpha.1 tag. It
+The native preview workflow accepts only the reviewed v1.2.0-alpha.2 tag. It
 requires Windows and all three native CI jobs, downloads their helper-only
 artifacts, verifies the four platform names and SHA-256 files, and publishes
 with --prerelease --latest=false. It cannot replace v1.1.0 as the stable latest

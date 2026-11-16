@@ -60,7 +60,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          if ($env:RELEASE_TAG -ne 'v1.2.0-alpha.1') { throw 'Review the version and release notes before tagging.' }
+          if ($env:RELEASE_TAG -ne 'v1.2.0-alpha.2') { throw 'Review the version and release notes before tagging.' }
           $expected = @('Windows-x64.zip', 'Linux-x64.tar.gz', 'macOS-arm64.zip', 'macOS-x64.zip')
           foreach ($suffix in $expected) {
             $name = "MOJO-Recomp-$($env:RELEASE_TAG)-$suffix"
@@ -71,5 +71,5 @@ jobs:
           }
           $assets = @(Get-ChildItem release -File)
           if ($assets.Count -ne 8) { throw 'Unexpected release artifact membership' }
-          gh release create $env:RELEASE_TAG @($assets.FullName) --verify-tag --prerelease --latest=false --title 'MOJO! Recomp v1.2.0-alpha.1 - native platform preview' --notes-file docs/NATIVE_RELEASE_NOTES.md
+          gh release create $env:RELEASE_TAG @($assets.FullName) --verify-tag --prerelease --latest=false --title 'MOJO! Recomp v1.2.0-alpha.2 - native platform preview' --notes-file docs/NATIVE_RELEASE_NOTES.md
           if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }
