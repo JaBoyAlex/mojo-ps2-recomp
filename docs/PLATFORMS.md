@@ -26,8 +26,8 @@ Windows: use the existing portable ZIP and MOJO.exe. Setup is unchanged.
 
 Linux preview: extract the native package to a writable folder; run Start-MOJO.sh
 or MOJO. GTK3 provides the disc picker. Without GTK3, pass `--game /path/to/disc.cue`.
-Python 3.9+, Bash, Clang with C++20 `<format>`, and native SDL2 development
-prerequisites are required. On Ubuntu 24.04: install python3, clang-19,
+Bash, curl, Clang with C++20 `<format>`, and native SDL2 development
+prerequisites are required. On Ubuntu 24.04: install clang-19,
 libc++-19-dev, libc++abi-19-dev, libx11-dev, libxext-dev, libxrandr-dev,
 libxcursor-dev, libxi-dev, libxfixes-dev, libasound2-dev, libpulse-dev and libudev-dev.
 A working Vulkan driver is required. Steam Deck packaging is not yet verified.
@@ -42,7 +42,8 @@ disable Gatekeeper or system integrity protection. Game compilation uses Clang
 and ordinary local dynamic libraries, without hardened-runtime restrictions or
 unrestricted JIT entitlements. Real hardware verification remains required.
 
-The bootstrap downloads pinned, SHA-256-checked CMake/Ninja wheels, framework
+The bootstrap downloads a pinned native Python 3.13.18 distribution and
+SHA-256-checked CMake/Ninja wheels, framework
 source and SDL2 source, and compiles SDL2 locally. The framework downloads its
 own pinned/hash-checked wgpu-native dependency. The compiler remains available
 for unseen EE/VU code. Native toolchain prerequisite installation is still a

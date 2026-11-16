@@ -29,3 +29,7 @@ CHD test fixture creation used chdman 0.287 obtained from the namDHC v2.0 tools
 release (https://github.com/umageddon/namDHC/releases/tag/v2.0), verified SHA-256
 `e475e5422e17557f38ec8e430e001cf566f377fed353d43c33a9fd8ce70c729d`.
 It is not redistributed or required by end users. No game test fixture is published.
+
+Unix Python bootstrap: Astral python-build-standalone release 20261110,
+CPython 3.13.18 native install-only archives; exact URLs/hashes are in
+builder/bootstrap.sh. Source: https://github.com/astral-sh/python-build-standalone/releases/tag/20261110

@@ -45,6 +45,7 @@ def unpack(name, cache):
     return dest
 
 def configure(root, state):
+    os.environ['PATH'] = str(Path(sys.executable).parent)+os.pathsep+os.environ.get('PATH', '')
     system = 'macos' if sys.platform == 'darwin' else 'linux'
     if system == 'linux' and platform.machine().lower() not in ('x86_64', 'amd64'):
         raise build.Failure(21, 'This package supports Linux x86-64 only.')
@@ -79,11 +80,22 @@ def configure(root, state):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--root', type=Path, required=True)
+    parser.add_argument('--game', type=Path)
     args, rest = parser.parse_known_args()
     root = args.root.resolve()
     state = Path.home()/'Library/Application Support/MOJO Recomp' if sys.platform == 'darwin' else root/'userdata'
     state.mkdir(parents=True, exist_ok=True)
     try:
+        # Reject incorrect ISO files before downloading/building other tools.
+        # Correct images still undergo the original full-image + ELF verification.
+        if args.game:
+            args.game = args.game.resolve()
+            if not args.game.is_file(): raise build.Failure(20, 'The selected disc image is missing or inaccessible.')
+            if args.game.suffix.lower() == '.iso' and build.digest(args.game) != build.ISO_SHA256:
+                raise build.Failure(20, 'Unsupported or damaged disc. Required: MOJO! USA SLUS_207.41, SYSTEM.CNF VER 1.02; see docs/COMPATIBILITY.md.')
+            rest += ['--game', str(args.game)]
+        elif '--prepare' in rest and not (state/'disc.iso').exists():
+            raise build.Failure(20, 'Headless setup requires --game with your supported MOJO! disc image.')
         with build.acquire_lock(state/'session.lock'):
             engine = configure(root, state)
             sys.argv = [str(root/'builder/build.py'), '--root', str(root), '--state', str(state), '--engine', str(engine), *rest]
