@@ -11,7 +11,7 @@ import subprocess
 import sys
 import uuid
 
-VERSION = '1.1.0'
+VERSION = '1.2.0-alpha.1'
 PIPELINE = '57ef1197-2d-upscale-4-queue-offsets-1-clear-1'
 ISO_SHA256 = 'bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5'
 ELF_SHA256 = 'b749b3765aa3c74d594ec502686246965b69e8492c49ac08f5283a245adc8a60'
