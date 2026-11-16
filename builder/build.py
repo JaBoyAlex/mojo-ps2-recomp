@@ -3,6 +3,8 @@ import argparse
 import hashlib
 import json
 import os
+import platform
+import signal
 from pathlib import Path
 import shutil
 import subprocess
@@ -15,13 +17,37 @@ ISO_SHA256 = 'bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5'
 ELF_SHA256 = 'b749b3765aa3c74d594ec502686246965b69e8492c49ac08f5283a245adc8a60'
 SERIAL = 'SLUS_207.41'
 
+def host_id():
+    machine = platform.machine().lower()
+    return platform.system().lower() + '-' + ('arm64' if machine in ('arm64', 'aarch64') else machine)
+
+def executable(name):
+    return name + ('.exe' if os.name == 'nt' else '')
+
+def acquire_lock(path):
+    lock = open(path, 'a+b')
+    try:
+        if os.name == 'nt':
+            import msvcrt
+            lock.seek(0)
+            msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+        else:
+            import fcntl
+            fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError:
+        lock.close()
+        raise
+    return lock
+
 class Failure(Exception):
     def __init__(self, code, message):
         self.code, self.message = code, message
 
 def digest(path):
     with open(path, 'rb') as stream:
-        return hashlib.file_digest(stream, 'sha256').hexdigest()
+        result = hashlib.sha256()
+        for chunk in iter(lambda: stream.read(1024 * 1024), b''): result.update(chunk)
+        return result.hexdigest()
 
 def progress(value, message):
     print(f'progress {value:.2f} {message}', flush=True)
@@ -35,11 +61,27 @@ def write_json(path, value):
 def run(command, cwd, log, timeout=3600, failure_code=22):
     with open(log, 'ab') as out:
         try:
-            result = subprocess.Popen([str(v) for v in command], cwd=cwd, stdout=out, stderr=subprocess.STDOUT)
+            result = subprocess.Popen([str(v) for v in command], cwd=cwd, stdout=out, stderr=subprocess.STDOUT,
+                                      start_new_session=os.name != 'nt')
+            previous = {}
+            if os.name != 'nt':
+                def cancel(signum, frame):
+                    try: os.killpg(result.pid, signal.SIGKILL)
+                    except ProcessLookupError: pass
+                    raise Failure(23, 'Setup was cancelled. Your saves and previous build are retained.')
+                for sig in (signal.SIGINT, signal.SIGTERM):
+                    previous[sig] = signal.signal(sig, cancel)
             result.wait(timeout=timeout)
         except subprocess.TimeoutExpired:
-            subprocess.run(['taskkill', '/PID', str(result.pid), '/T', '/F'], stdout=out, stderr=out)
+            if os.name == 'nt':
+                subprocess.run(['taskkill', '/PID', str(result.pid), '/T', '/F'], stdout=out, stderr=out)
+            else:
+                try: os.killpg(result.pid, signal.SIGKILL)
+                except ProcessLookupError: pass
+            result.wait()
             raise Failure(23, 'Build timed out. Keep the private logs locally and retry setup.')
+        finally:
+            for sig, handler in locals().get('previous', {}).items(): signal.signal(sig, handler)
     if result.returncode:
         if failure_code == 20:
             raise Failure(20, 'Invalid or unsupported disc image. Supply the verified USA PS2 ISO, BIN/CUE or single-track CHD.')
@@ -73,7 +115,7 @@ def prepare(args, state):
         run([sys.executable, '-I', engine/'scripts/disc.py', 'iso', source, candidate], engine, cache/'import-private.log', failure_code=20)
         iso = candidate
     elif source.suffix.lower() == '.chd':
-        converter = args.root/'chd_to_iso.exe'
+        converter = args.root/executable('chd_to_iso')
         if not converter.is_file():
             raise Failure(21, 'CHD reader is missing. Use the portable release or convert your own disc to ISO first.')
         run([converter, source, candidate], engine, cache/'import-private.log', failure_code=20)
@@ -87,6 +129,11 @@ def prepare(args, state):
         patch = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(patch)
         patch.apply(engine)
+    if os.name != 'nt':
+        spec = importlib.util.spec_from_file_location('platform_support', Path(__file__).with_name('platform_support.py'))
+        patch = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(patch)
+        patch.apply(engine)
     disc = state/'disc.iso'
     if iso.resolve() != disc.resolve():
         shutil.copyfile(iso, disc.with_suffix('.new'))
@@ -96,18 +143,20 @@ def prepare(args, state):
     engine_disc = game/'disc.iso'
     if not engine_disc.exists() or digest(engine_disc) != ISO_SHA256:
         shutil.copyfile(disc, engine_disc)
-    if active.get('version') == VERSION and active.get('pipeline') == PIPELINE:
+    if active.get('version') == VERSION and active.get('pipeline') == PIPELINE and active.get('host', 'windows-amd64') == host_id():
         dest = state/'builds'/active.get('build', '')
-        if (dest/'runtime.exe').is_file() and digest(dest/'runtime.exe') == active.get('runtime_sha256'):
+        if (dest/executable('runtime')).is_file() and digest(dest/executable('runtime')) == active.get('runtime_sha256'):
             progress(1, 'Verified local build is ready')
             return dest
     progress(.20, 'Compiling the open-source runtime and translating your local game (several minutes)')
-    run([shutil.which('bash.exe'), 'scripts/port.sh', 'mojo', disc, '--native-only'], engine, cache/'build-private.log')
+    shell = shutil.which(executable('bash'))
+    if not shell: raise Failure(21, 'Bash is missing from the native build toolchain.')
+    run([shell, 'scripts/port.sh', 'mojo', disc, '--native-only'], engine, cache/'build-private.log')
     progress(.90, 'Installing the local build without replacing saves')
     dest = state/'builds'/(VERSION+'-'+uuid.uuid4().hex[:8])
     dest.mkdir(parents=True)
     native = engine/'build/native-mojo'
-    shutil.copy2(native/'ps2run.exe', dest/'runtime.exe')
+    shutil.copy2(native/executable('ps2run'), dest/executable('runtime'))
     for dll in native.glob('*.dll'):
         shutil.copy2(dll, dest/dll.name)
     # Keep the exact portable compiler on PATH for previously unseen EE/VU blocks.
@@ -116,7 +165,7 @@ def prepare(args, state):
     card = saves/'mojo.ps2'
     if not card.exists():
         run([sys.executable, '-I', engine/'scripts/mcformat.py', card], engine, cache/'card-private.log')
-    write_json(active_path, {'version': VERSION, 'pipeline': PIPELINE, 'build': dest.name, 'runtime_sha256': digest(dest/'runtime.exe')})
+    write_json(active_path, {'version': VERSION, 'pipeline': PIPELINE, 'host': host_id(), 'build': dest.name, 'runtime_sha256': digest(dest/executable('runtime'))})
     progress(1, 'Your native MOJO! build is ready')
     return dest
 
@@ -124,6 +173,7 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--root', type=Path, required=True)
     p.add_argument('--engine', type=Path, required=True)
+    p.add_argument('--state', type=Path)
     p.add_argument('--game', type=Path)
     p.add_argument('--prepare', action='store_true')
     p.add_argument('--smoke', action='store_true')
@@ -132,14 +182,10 @@ def main():
     args.root = args.root.resolve()
     args.engine = args.engine.resolve()
     if args.game: args.game = args.game.resolve()
-    state = args.root/'userdata'
+    state = args.state.resolve() if args.state else args.root/'userdata'
     state.mkdir(parents=True, exist_ok=True)
-    # Windows exclusive file locking is released even after a crash.
-    import msvcrt
-    lock = open(state/'builder.lock', 'a+b')
-    lock.seek(0)
     try:
-        msvcrt.locking(lock.fileno(), msvcrt.LK_NBLCK, 1)
+        lock = acquire_lock(state/'builder.lock')
     except OSError:
         print('Another builder or game is using this installation. Close it first.')
         return 24
@@ -153,7 +199,7 @@ def main():
         if not settings_path.exists(): write_json(settings_path, {'fullscreen': False})
         scale = settings.get('render_scale')
         if str(scale) in ('1','2','3','4'): os.environ['PS2_SCALE'] = str(scale)
-        command = [dest/'runtime.exe', '--disc', state/'disc.iso', '--game-dir', state/'saves', '--memcard', state/'saves/mojo.ps2']
+        command = [dest/executable('runtime'), '--disc', state/'disc.iso', '--game-dir', state/'saves', '--memcard', state/'saves/mojo.ps2']
         if args.smoke:
             command += ['--frames', '3100', '--press', '300:start', '--press', '600:cross']
         else:

@@ -4,6 +4,9 @@
 /tools/
 /MOJO.exe
 /chd_to_iso.exe
+/MOJO
+/chd_to_iso
+/MOJO.app/
 __pycache__/
 *.pyc
 *.iso
