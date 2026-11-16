@@ -8,7 +8,11 @@
       "ids": [
         "SLUS-20741"
       ]
-    }
+    },
+    "dumps": [
+      { "name": "USA PS2 VER 1.02 (normalized ISO, project reference)", "size": 114003968, "crc32": "50f809c4" },
+      { "name": "USA PS2 VER 1.02 (raw BIN, project reference)", "size": 130926432, "crc32": "da03e3ab" }
+    ]
   },
   "prepare": {
     "program": [

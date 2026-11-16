@@ -6,6 +6,9 @@
 | Boot executable | `SLUS_207.41` (serial SLUS-20741) |
 | SYSTEM.CNF VER | `1.02` |
 | Raw BIN size | 130926432 bytes |
+| Raw BIN CRC32 | `da03e3ab` |
+| Normalized ISO size | 114003968 bytes |
+| Normalized ISO CRC32 | `50f809c4` |
 | Raw layout | One MODE2/2352 data track, INDEX 01 00:00:00 |
 | BIN SHA-256 | `c08a5f5811efddcdf3f06ab3e8212fae622e9d4613adabb8a47b5a88280b6432` |
 | Normalized ISO SHA-256 | `bcfba449a662cc898868317c4bc415e9a2084a53ae8b92b7a4a19efbaa54f3c5` |
@@ -16,6 +19,9 @@ not claimed to be independently certified Redump records. No official retail
 revision label beyond the observed disc metadata is asserted. CUE formatting and
 CHD compression vary, so the builder verifies their decoded ISO, not their container
 hash. CHDs with parent dependencies, multiple tracks or stored gaps are rejected.
+CRC32 values were recomputed from the SHA-256-matching local reference on
+2026-11-16 and are provided to RecompLauncher as project-reference dump metadata.
+The builder continues enforcing both SHA-256 checks regardless of a launcher badge.
 
 ## Existing playable build
 

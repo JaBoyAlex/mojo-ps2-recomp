@@ -60,7 +60,9 @@ standalone setup. Every platform archive has its own root recomplauncher.json.
 The current official schema allows program fallback lists, but no OS-specific
 prepare override; packaging selects appropriate executable paths instead.
 Settings, Big Picture fullscreen, exit codes and 7200-second timeout are retained.
-No CRC/size dump badge was invented; exact verification remains in the builder.
+Known dump sizes/CRCs come from the SHA-256-matching project reference documented
+in COMPATIBILITY.md; they are not claimed as independently certified Redump data.
+The builder still enforces exact SHA-256 verification, independently of the badge.
 
 Linux data stays in userdata beside MOJO. macOS data is stored in
 `~/Library/Application Support/MOJO Recomp`, outside the signed/read-only app.
