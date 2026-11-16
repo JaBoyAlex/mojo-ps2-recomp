@@ -24,6 +24,9 @@ def host_id():
 def executable(name):
     return name + ('.exe' if os.name == 'nt' else '')
 
+def pipeline_id():
+    return PIPELINE if os.name == 'nt' else PIPELINE+'-native-1'
+
 def acquire_lock(path):
     lock = open(path, 'a+b')
     try:
@@ -143,7 +146,7 @@ def prepare(args, state):
     engine_disc = game/'disc.iso'
     if not engine_disc.exists() or digest(engine_disc) != ISO_SHA256:
         shutil.copyfile(disc, engine_disc)
-    if active.get('version') == VERSION and active.get('pipeline') == PIPELINE and active.get('host', 'windows-amd64') == host_id():
+    if active.get('version') == VERSION and active.get('pipeline') == pipeline_id() and active.get('host', 'windows-amd64') == host_id():
         dest = state/'builds'/active.get('build', '')
         if (dest/executable('runtime')).is_file() and digest(dest/executable('runtime')) == active.get('runtime_sha256'):
             progress(1, 'Verified local build is ready')
@@ -165,7 +168,7 @@ def prepare(args, state):
     card = saves/'mojo.ps2'
     if not card.exists():
         run([sys.executable, '-I', engine/'scripts/mcformat.py', card], engine, cache/'card-private.log')
-    write_json(active_path, {'version': VERSION, 'pipeline': PIPELINE, 'host': host_id(), 'build': dest.name, 'runtime_sha256': digest(dest/executable('runtime'))})
+    write_json(active_path, {'version': VERSION, 'pipeline': pipeline_id(), 'host': host_id(), 'build': dest.name, 'runtime_sha256': digest(dest/executable('runtime'))})
     progress(1, 'Your native MOJO! build is ready')
     return dest
 
@@ -183,7 +186,10 @@ def main():
     args.engine = args.engine.resolve()
     if args.game: args.game = args.game.resolve()
     state = args.state.resolve() if args.state else args.root/'userdata'
-    state.mkdir(parents=True, exist_ok=True)
+    try: state.mkdir(parents=True, exist_ok=True)
+    except OSError:
+        print('Cannot create player data. Extract the package to a writable folder and check free space.',flush=True)
+        return 21
     try:
         lock = acquire_lock(state/'builder.lock')
     except OSError:

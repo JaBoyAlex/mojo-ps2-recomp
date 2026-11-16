@@ -29,7 +29,8 @@ def fetch(name, cache):
     return path
 
 def unpack(name, cache):
-    dest = cache/name
+    record = json.loads(Path(__file__).with_name('native-dependencies.json').read_text())[name]
+    dest = cache/(name+'-'+record['sha256'][:12])
     if not (dest/'.complete').exists():
         archive = fetch(name, cache)
         dest.mkdir(parents=True, exist_ok=True)
@@ -49,7 +50,7 @@ def configure(root, state):
     system = 'macos' if sys.platform == 'darwin' else 'linux'
     if system == 'linux' and platform.machine().lower() not in ('x86_64', 'amd64'):
         raise build.Failure(21, 'This package supports Linux x86-64 only.')
-    cache = state/'cache/native-tools'
+    cache = state/'cache'/('native-tools-'+build.host_id())
     cache.mkdir(parents=True, exist_ok=True)
     # One lock also protects extraction and dependency builds, before build.py takes over.
     with build.acquire_lock(state/'bootstrap.lock'):
@@ -84,8 +85,8 @@ def main():
     args, rest = parser.parse_known_args()
     root = args.root.resolve()
     state = Path.home()/'Library/Application Support/MOJO Recomp' if sys.platform == 'darwin' else root/'userdata'
-    state.mkdir(parents=True, exist_ok=True)
     try:
+        state.mkdir(parents=True, exist_ok=True)
         # Reject incorrect ISO files before downloading/building other tools.
         # Correct images still undergo the original full-image + ELF verification.
         if args.game:
