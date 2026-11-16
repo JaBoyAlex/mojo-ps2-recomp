@@ -10,6 +10,18 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = set(json.loads((ROOT/'publication-files.json').read_text(encoding='utf-8')))
+# Reviewed source paths introduced on the native preview branch. A full-ref CI
+# checkout sees those commits even when checking stable Windows. Accept these
+# names only in history; current source, staging and archives retain ALLOWED.
+HISTORY_ALLOWED = ALLOWED | {
+    '.github/workflows/native.yml', 'Start-MOJO.sh',
+    'builder/bootstrap.sh', 'builder/bootstrap_native.py',
+    'builder/host_clock.hpp', 'builder/native-dependencies.json',
+    'builder/platform_support.py', 'docs/NATIVE_RELEASE_NOTES.md',
+    'docs/PLATFORMS.md', 'scripts/native_ci.py', 'scripts/package_native.py',
+    'scripts/security_native.py', 'src/Info.plist', 'src/launcher_macos.mm',
+    'src/launcher_unix.cpp', 'tests/host_clock.cpp', 'tests/test_native.py',
+}
 BINARY = {'MOJO.exe', 'chd_to_iso.exe'}
 PATTERNS = [
     ('private-home-path', re.compile(rb'(?:[A-Za-z]:[/\\]Users[/\\](?!Public(?:[/\\]))[^\s\x00"<>]+|/ho' rb'me/[^/\s]+/|/Us' rb'ers/[^/\s]+/)')),
@@ -18,9 +30,9 @@ PATTERNS = [
     ('game-data', re.compile(rb'(?:PS2 Memory ' rb'Card Format|\x7fELF\x01\x01\x01)')),
 ]
 
-def check(name, data, release=False):
+def check(name, data, release=False, historical=False):
     failures=[]
-    if name not in ALLOWED and not (release and name in BINARY):
+    if name not in (HISTORY_ALLOWED if historical else ALLOWED) and not (release and name in BINARY):
         failures.append((name, 'not-allowlisted'))
     if len(data)>4*1024*1024:
         failures.append((name, 'unexpected-size'))
@@ -71,7 +83,7 @@ def main():
             for row in git('ls-tree','-r',commit).decode().splitlines():
                 left,name=row.split('\t',1); mode,kind,oid=left.split()
                 if kind!='blob' or mode not in ('100644','100755'): failures.append((name,'unsafe-object')); continue
-                failures+=check(name,git('cat-file','blob',oid))
+                failures+=check(name,git('cat-file','blob',oid),historical=True)
     for name,kind in sorted(set(failures)):
         print(f'FAIL {kind}: {name}')  # Never print matched values.
     if failures: return 1

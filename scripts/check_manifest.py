@@ -10,6 +10,9 @@ schema=urllib.request.urlopen(request,timeout=30).read()
 # NVIDIA DLSS runtime inputs; none of this project's fields change. CDN caches
 # may serve either snapshot while the SDK update rolls out.
 reviewed={
+    # 2026-11-16: reviewed prepare options and program fallback lists;
+    # same official snapshot already checked by the native preview release.
+    '081056412bcf5fc65b5cf07748e3d42a0a6d75edb7e5afd5f33f2e630fcabc42',
     'b962fe1c3d3c7e916c0032efd8259c36f0cd4a7fdb63ea6d858166a72750c217',
     '0946d89093460d0aa60f4877e486d3c65ae4dd3ee251b500db98b4fc626632f3',
 }

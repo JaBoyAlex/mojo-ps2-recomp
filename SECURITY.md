@@ -20,3 +20,10 @@ paths embedded in the pinned LLVM libc++abi static library in MOJO.exe. These
 refer to LLVM's GitHub runner, not any user's machine. The six filenames and full
 prefix are enumerated in the verifier; other home paths remain errors. There are
 no broad secret-scanner suppressions.
+
+Full-ref history scans also recognize an explicit list of reviewed native-preview
+source filenames, since CI fetches Linux/macOS branches and tags alongside stable
+Windows. This does not add files to the stable source or release allowlist.
+Historical files still undergo all privacy, credential, proprietary-data and
+size checks. Current source, staged files and archives retain the strict active
+publication allowlist; unknown paths remain blocked in every scope.

@@ -7,6 +7,19 @@ spec=importlib.util.spec_from_file_location('gate',root/'scripts/verify_publicat
 gate=importlib.util.module_from_spec(spec); spec.loader.exec_module(gate)
 
 class PublicationTests(unittest.TestCase):
+    def test_reviewed_native_paths_are_allowed_only_in_history(self):
+        name='builder/host_clock.hpp'
+        self.assertEqual(gate.check(name,b'// synthetic fixture',historical=True),[])
+        self.assertIn((name,'not-allowlisted'),gate.check(name,b'// synthetic fixture'))
+        self.assertIn((name,'not-allowlisted'),gate.check(name,b'// synthetic fixture',True))
+
+    def test_history_keeps_private_and_proprietary_checks(self):
+        name='builder/host_clock.hpp'
+        private=b'C:'+bytes([92])+b'Users'+bytes([92])+b'example-person'+bytes([92])+b'private'
+        self.assertIn((name,'private-home-path'),gate.check(name,private,historical=True))
+        self.assertIn((name,'game-data'),gate.check(name,bytes([127])+b'ELF'+bytes([1,1,1]),historical=True))
+        self.assertIn(('generated/mojo/unit.cpp','not-allowlisted'),gate.check('generated/mojo/unit.cpp',b'synthetic',historical=True))
+
     def test_renamed_executable_is_blocked(self):
         self.assertIn(('README.md','game-data'),gate.check('README.md',bytes([127])+b'ELF'+bytes([1,1,1])))
 
