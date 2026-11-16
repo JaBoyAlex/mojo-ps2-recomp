@@ -49,6 +49,7 @@ def main():
         pad=engine/'host/pad_test.cpp';text=pad.read_text()
         text=text.replace('    poll_input();\n}', '''    poll_input();
     if (b == SDL_CONTROLLER_BUTTON_BACK) { SDL_Delay(down ? 310 : 90); poll_input(); }
+    if (b == SDL_CONTROLLER_BUTTON_GUIDE && !down) { SDL_Delay(300); poll_input(); }
 }''',1)
         text=text.replace('poll_input();','frame_input();')
         text=text.replace('namespace {','namespace ps2 { void native_test_latch_pads(); }\nstatic void frame_input() { poll_input(); ps2::native_test_latch_pads(); }\n\nnamespace {',1)
