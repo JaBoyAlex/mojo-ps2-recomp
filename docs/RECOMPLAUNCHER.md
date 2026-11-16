@@ -11,7 +11,15 @@ for the original USA PS2 disc described in COMPATIBILITY.md. The launcher
 checks the serial when it can read one. The builder normalizes the image and
 enforces exact disc and boot executable SHA-256 validation for every format.
 The launcher's raw ISO9660 check would reject CUE and CHD before that step.
-Verified-dump metadata is omitted because no independent Redump record was verified.
+Verified-copy sizes and CRC32 values come from the SHA-256-matching project
+reference documented in COMPATIBILITY.md. They are not claimed as independent
+Redump certification; exact SHA-256 validation remains mandatory in the builder.
+
+Native preview packages select Linux/macOS executable paths and macOS's external
+data directory during packaging. They retain the same Level 3 protocol and all
+settings. See PLATFORMS.md for prerequisites and test boundaries. GitHub
+prereleases require RecompLauncher's service to enable a catalog beta; publishing
+one does not automatically switch stable users to the experimental build.
 
 Launcher's JSON settings are separate from upstream controller bindings. New
 defaults only are supplied, so updates preserve player choices. Save declarations

@@ -17,7 +17,19 @@ The pinned upstream portable script additionally downloads CMake 4.4.4, Ninja
 embedded SHA-256 values. These are downloaded tools, not game dependencies copied
 into this source repository. Upstream runtime dependency scripts verify downloads.
 
+The Unix bootstrap pins CMake 3.31.6 and Ninja 1.11.1.4 binary wheels from their
+official PyPI distributions, plus SDL2 source 2.32.10. Download URLs and SHA-256
+values are in builder/native-dependencies.json. These dependencies are downloaded
+locally, not included in release archives. Native build validation uses Apple
+Clang or distribution Clang, with versions recorded by CI. The SDK guide/schema
+were reviewed again on 2026-11-16; program fallback lists and packaging-specific
+manifests are used rather than unsupported platform-specific prepare fields.
+
 CHD test fixture creation used chdman 0.287 obtained from the namDHC v2.0 tools
 release (https://github.com/umageddon/namDHC/releases/tag/v2.0), verified SHA-256
 `e475e5422e17557f38ec8e430e001cf566f377fed353d43c33a9fd8ce70c729d`.
 It is not redistributed or required by end users. No game test fixture is published.
+
+Unix Python bootstrap: Astral python-build-standalone release 20261110,
+CPython 3.13.18 native install-only archives; exact URLs/hashes are in
+builder/bootstrap.sh. Source: https://github.com/astral-sh/python-build-standalone/releases/tag/20261110

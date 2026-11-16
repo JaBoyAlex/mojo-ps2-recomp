@@ -7,10 +7,11 @@ import re
 import subprocess
 import sys
 import zipfile
+import tarfile
 
 ROOT = Path(__file__).resolve().parents[1]
 ALLOWED = set(json.loads((ROOT/'publication-files.json').read_text(encoding='utf-8')))
-BINARY = {'MOJO.exe', 'chd_to_iso.exe'}
+BINARY = {'MOJO.exe', 'chd_to_iso.exe', 'MOJO', 'chd_to_iso'}
 PATTERNS = [
     ('private-home-path', re.compile(rb'(?:[A-Za-z]:[/\\]Users[/\\](?!Public(?:[/\\]))[^\s\x00"<>]+|/ho' rb'me/[^/\s]+/|/Us' rb'ers/[^/\s]+/)')),
     ('private-key', re.compile(rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----')),
@@ -24,8 +25,9 @@ def check(name, data, release=False):
         failures.append((name, 'not-allowlisted'))
     if len(data)>4*1024*1024:
         failures.append((name, 'unexpected-size'))
-    if name in BINARY and not data.startswith(b'MZ'):
-        failures.append((name, 'not-a-PE-helper'))
+    if name in BINARY:
+        good = data.startswith(b'MZ') if name.endswith('.exe') else data.startswith((b'\x7fELF\x02', b'\xcf\xfa\xed\xfe', b'\xfe\xed\xfa\xcf'))
+        if not good: failures.append((name, 'not-a-native-helper'))
     scanned = data
     if name == 'MOJO.exe':
         # Exact assertion paths from the pinned public LLVM libc++abi CI build.
@@ -48,13 +50,42 @@ def main():
     args=parser.parse_args()
     failures=[]
     if args.archive:
-        with zipfile.ZipFile(args.archive) as archive:
-            names=archive.namelist()
+        if args.archive.name.endswith('.tar.gz'):
+            context=tarfile.open(args.archive,'r:gz')
+        else:
+            context=zipfile.ZipFile(args.archive)
+        with context as archive:
+            is_tar=isinstance(archive,tarfile.TarFile)
+            names=archive.getnames() if is_tar else archive.namelist()
+            def contents(name):
+                return archive.extractfile(name).read() if is_tar else archive.read(name)
             if len(names)!=len(set(names)): failures.append(('archive','duplicate-path'))
+            normalized=set()
             for name in names:
-                if not name.endswith('/'): failures+=check(name,archive.read(name),True)
-            if not BINARY.issubset(names): failures.append(('archive','missing-helper'))
-            if not ALLOWED.issubset(names): failures.append(('archive','missing-source-or-notice'))
+                member=archive.getmember(name) if is_tar else archive.getinfo(name)
+                if (member.isdir() if is_tar else member.is_dir()): continue
+                if (not member.isfile() if is_tar else (member.external_attr >> 16) & 0o170000 == 0o120000):
+                    failures.append((name,'archive-link-or-special-file')); continue
+                if (member.size if is_tar else member.file_size)>4*1024*1024:
+                    failures.append((name,'unexpected-size')); continue
+                logical=name
+                if name.startswith('MOJO.app/Contents/Resources/'):
+                    logical=name[len('MOJO.app/Contents/Resources/'):]
+                elif name=='MOJO.app/Contents/MacOS/MOJO': logical='MOJO'
+                elif name=='MOJO.app/Contents/Info.plist': logical='src/Info.plist'
+                elif name=='MOJO.app/Contents/_CodeSignature/CodeResources':
+                    # Apple's generated resource hash plist is the only extra signed-bundle file.
+                    import plistlib
+                    value=plistlib.loads(contents(name))
+                    failures+=check('src/Info.plist',contents(name),True)
+                    if not isinstance(value,dict) or not set(value).issubset({'files','files2','rules','rules2'}):
+                        failures.append((name,'invalid-code-signature'))
+                    continue
+                normalized.add(logical)
+                failures+=check(logical,contents(name),True)
+            helpers={'MOJO.exe','chd_to_iso.exe'} if 'MOJO.exe' in normalized else {'MOJO','chd_to_iso'}
+            if not helpers.issubset(normalized): failures.append(('archive','missing-helper'))
+            if not ALLOWED.issubset(normalized): failures.append(('archive','missing-source-or-notice'))
     else:
         for name in sorted(ALLOWED):
             path=ROOT/name

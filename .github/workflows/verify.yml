@@ -5,7 +5,12 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+concurrency:
+  group: verify-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
 jobs:
+  native:
+    uses: ./.github/workflows/native.yml
   verify:
     runs-on: windows-latest
     timeout-minutes: 40
@@ -14,6 +19,7 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
         with:
           python-version: '3.13'
@@ -21,18 +27,21 @@ jobs:
       - run: python -m pip install jsonschema==4.26.0
       - run: python scripts/check_manifest.py
       - run: ./scripts/package.ps1
-      - run: ./scripts/security.ps1 -Archive dist/MOJO-Recomp-v1.1.0-Windows-x64.zip
+      - run: |
+          $archive = @(Get-ChildItem dist/MOJO-Recomp-*-Windows-x64.zip)
+          if ($archive.Count -ne 1) { throw 'Expected one Windows release archive' }
+          ./scripts/security.ps1 -Archive $archive[0].FullName
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: verified-portable-builder
           path: |
-            dist/MOJO-Recomp-v1.1.0-Windows-x64.zip
-            dist/MOJO-Recomp-v1.1.0-Windows-x64.zip.sha256
+            dist/MOJO-Recomp-*-Windows-x64.zip
+            dist/MOJO-Recomp-*-Windows-x64.zip.sha256
           if-no-files-found: error
           retention-days: 7
   release:
     if: startsWith(github.ref, 'refs/tags/v')
-    needs: verify
+    needs: [verify, native]
     runs-on: windows-latest
     permissions:
       contents: write
@@ -42,7 +51,8 @@ jobs:
           persist-credentials: false
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          name: verified-portable-builder
+          pattern: '*'
+          merge-multiple: true
           path: release
       - name: Publish verified release
         shell: pwsh
@@ -50,6 +60,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
-          if ($env:RELEASE_TAG -ne 'v1.1.0') { throw 'Update the version and release notes before tagging.' }
-          gh release create $env:RELEASE_TAG release/MOJO-Recomp-v1.1.0-Windows-x64.zip release/MOJO-Recomp-v1.1.0-Windows-x64.zip.sha256 --verify-tag --latest --title 'MOJO! Recomp v1.1.0' --notes-file docs/RELEASE_NOTES.md
+          if ($env:RELEASE_TAG -ne 'v1.2.0-alpha.2') { throw 'Review the version and release notes before tagging.' }
+          $expected = @('Windows-x64.zip', 'Linux-x64.tar.gz', 'macOS-arm64.zip', 'macOS-x64.zip')
+          foreach ($suffix in $expected) {
+            $name = "MOJO-Recomp-$($env:RELEASE_TAG)-$suffix"
+            $path = Join-Path release $name
+            if (!(Test-Path -LiteralPath $path) -or !(Test-Path -LiteralPath "$path.sha256")) { throw "Missing verified platform artifact: $name" }
+            $hash = ((Get-Content -Raw -LiteralPath "$path.sha256") -split '\s+')[0]
+            if ((Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash -ne $hash) { throw "Artifact checksum mismatch: $name" }
+          }
+          $assets = @(Get-ChildItem release -File)
+          if ($assets.Count -ne 8) { throw 'Unexpected release artifact membership' }
+          gh release create $env:RELEASE_TAG @($assets.FullName) --verify-tag --prerelease --latest=false --title 'MOJO! Recomp v1.2.0-alpha.2 - native platform preview' --notes-file docs/NATIVE_RELEASE_NOTES.md
           if ($LASTEXITCODE -ne 0) { throw 'Release publication failed' }

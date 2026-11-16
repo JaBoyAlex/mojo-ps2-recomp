@@ -5,9 +5,17 @@
 #include <string.h>
 #include <wchar.h>
 
+#ifdef _WIN32
+#define open_file _wfopen
+#define FILE_MODE(value) L##value
 int wmain(int argc, wchar_t **argv) {
+#else
+#define open_file fopen
+#define FILE_MODE(value) value
+int main(int argc, char **argv) {
+#endif
     if(argc != 3) return 2;
-    FILE *input = _wfopen(argv[1], L"rb");
+    FILE *input = open_file(argv[1], FILE_MODE("rb"));
     if(!input) return 20;
     chd_file *chd = NULL;
     if(chd_open_file(input, CHD_OPEN_READ, NULL, &chd) != CHDERR_NONE) { fclose(input); return 20; }
@@ -31,7 +39,7 @@ int wmain(int argc, wchar_t **argv) {
     else if(!strcmp(type,"MODE1_RAW")) offset=16;
     else if(strcmp(type,"MODE1") && strcmp(type,"MODE2_FORM1")) good=0;
     if(!good) { chd_close(chd); fclose(input); return 20; }
-    FILE *out=_wfopen(argv[2],L"wb");
+    FILE *out=open_file(argv[2],FILE_MODE("wb"));
     unsigned char *buffer=malloc(h->hunkbytes);
     if(!out || !buffer) { if(out) fclose(out); free(buffer); chd_close(chd); fclose(input); return 21; }
     unsigned current=~0u; int result=0;
