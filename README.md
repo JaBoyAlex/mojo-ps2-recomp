@@ -13,6 +13,7 @@
 
 <p align="center">
   <a href="#get-started">Get started</a> &nbsp;·&nbsp;
+  <a href="#web-port">Web port</a> &nbsp;·&nbsp;
   <a href="#your-game-your-way">Features</a> &nbsp;·&nbsp;
   <a href="#required-game-copy">Required disc</a> &nbsp;·&nbsp;
   <a href="#documentation-and-credits">Documentation</a>
@@ -22,6 +23,12 @@
   <a href="https://i.redd.it/gclcgts6u51i1.png"><img src="https://i.redd.it/gclcgts6u51i1.png" alt="Actual MOJO! native recomp gameplay: the red ball rolls toward a circular Stage 1 platform surrounded by space, with the original HUD visible." width="760"></a><br>
   <sub>Actual gameplay from the native recomp · Stage 1 · Click for the full-resolution image</sub>
 </p>
+
+## Web port
+
+Explore the separate MOJO! browser project.
+
+[![Check out the web port!](https://img.shields.io/badge/Check_out_the_web_port!-7354b3?style=for-the-badge)](https://jaboyalex.github.io/mojo-ps2-web/)
 
 ## Your game, your way
 
